@@ -1,0 +1,30 @@
+palettes:
+  - name: global_palette
+    fixed-entries:
+      - color: {index: 0, r: 0, g: 255, b: 33} # transparent placeholder
+      - color: {index: 1, r: 0, g: 0, b: 0} # black
+      - color: {index: 2, r: 255, g: 255, b: 255} # white
+      - color: {index: 3, r: 66, g: 160, b: 255} # light blue for computer cutscene
+    images: automatic
+
+converts:
+  - name: sprites
+    palette: global_palette
+    transparent-color-index: 0
+    images:
+      - niko_up.png
+      - niko_down.png
+      - niko_left.png
+      - niko_right.png
+      - niko_portrait_neutral.png
+      - photo.png
+      - computer_off.png
+      - computer_on.png
+
+outputs:
+  - type: c
+    include-file: gfx.h
+    palettes:
+      - global_palette
+    converts:
+      - sprites
