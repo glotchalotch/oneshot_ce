@@ -1,5 +1,5 @@
 # "OneShot" Demo for TI-84 Plus CE Graphing Calculator
-This is "OneShot", traditionally a game played on PC (and soon-to-be consoles too), ported to the TI-84 Plus CE graphing calculator.
+This is "OneShot", traditionally a game played on PC (and soon-to-be consoles too), unofficially ported to the TI-84 Plus CE graphing calculator.
 
 I made this because I saw a [post on Reddit](https://www.reddit.com/r/oneshot/comments/quy9ps/imagine_oneshot_on_a_graphing_calculator/) posing "OneShot on calculator" as a hypothetical, so I decided to make it a bit of a reality.
 
