@@ -8,8 +8,8 @@ extern "C" {
 #define niko_portrait_neutral_width 48
 #define niko_portrait_neutral_height 48
 #define niko_portrait_neutral_size 2306
-#define niko_portrait_neutral ((gfx_sprite_t*)niko_portrait_neutral_data)
-extern unsigned char niko_portrait_neutral_data[2306];
+#define niko_portrait_neutral_compressed_size 464
+extern unsigned char niko_portrait_neutral_compressed[464];
 
 #ifdef __cplusplus
 }

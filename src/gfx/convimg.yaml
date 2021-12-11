@@ -20,6 +20,9 @@ converts:
       - photo.png
       - computer_off.png
       - computer_on.png
+      - room_house_start_bg1.png
+      - room_house_start_bg2.png
+    compress: zx7
 
 outputs:
   - type: c

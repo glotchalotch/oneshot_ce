@@ -1,5 +1,6 @@
 #include <tice.h>
 #include <graphx.h>
+#include <compression.h>
 
 #include "gfx/gfx.h"
 #include "dialogue.h"
@@ -23,24 +24,39 @@ void initGfx() {
 int main() {
     initGfx();    
 
-    gfx_sprite_t *niko_down_scaled = gfx_MallocSprite(40, 54); 
+    gfx_sprite_t *niko_down_scaled = gfx_MallocSprite(40, 54);
+    gfx_sprite_t *niko_down = gfx_MallocSprite(20, 27);
+    zx7_Decompress(niko_down, niko_down_compressed);
     gfx_ScaleSprite(niko_down, niko_down_scaled);
     gfx_sprite_t *niko_up_scaled = gfx_MallocSprite(40, 54); 
+    gfx_sprite_t *niko_up = gfx_MallocSprite(20, 27);
+    zx7_Decompress(niko_up, niko_up_compressed);
     gfx_ScaleSprite(niko_up, niko_up_scaled);
     gfx_sprite_t *niko_left_scaled = gfx_MallocSprite(40, 56); 
+    gfx_sprite_t *niko_left = gfx_MallocSprite(20, 28);
+    zx7_Decompress(niko_left, niko_left_compressed);
     gfx_ScaleSprite(niko_left, niko_left_scaled);
     gfx_sprite_t *niko_right_scaled = gfx_MallocSprite(40, 56); 
+    gfx_sprite_t *niko_right = gfx_MallocSprite(20, 28);
+    zx7_Decompress(niko_right, niko_right_compressed);
     gfx_ScaleSprite(niko_right, niko_right_scaled);
-    gfx_sprite_t *behind_niko = gfx_MallocSprite(40, 56);
-    gfx_GetSprite(behind_niko, 0, 0);
 
-    gfx_sprite_t *curSprite = niko_down_scaled;
-    gfx_TransparentSprite(curSprite, 160, 144);
+    free(niko_left);
+    free(niko_up);
+    free(niko_right);
+    free(niko_down);
+
+    int curX = 6;
+    int curY = 150;
 
     loadRoom();
 
-    int curX = 128;
-    int curY = 144;
+    gfx_sprite_t *behind_niko = gfx_MallocSprite(40, 56);
+    gfx_GetSprite(behind_niko, curX, curY);
+
+    gfx_sprite_t *curSprite = niko_down_scaled;
+    gfx_TransparentSprite(curSprite, curX, curY);
+
     uint8_t curDir = Down;
 
     uint8_t moveSpeed = 16;

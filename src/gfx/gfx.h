@@ -15,6 +15,8 @@ extern "C" {
 #include "photo.h"
 #include "computer_off.h"
 #include "computer_on.h"
+#include "room_house_start_bg1.h"
+#include "room_house_start_bg2.h"
 
 #ifdef __cplusplus
 }

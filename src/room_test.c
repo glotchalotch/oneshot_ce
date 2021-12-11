@@ -1,5 +1,6 @@
 #include <graphx.h>
 #include <tice.h>
+#include <compression.h>
 
 #include "gfx/gfx.h"
 #include "dialogue.h"
@@ -11,9 +12,29 @@ uint8_t computerCutsceneState = 0;
 bool inComputerCutscene = false;
 
 void renderRoom() {
-    gfx_FillScreen(2);
+    //rendering the bg all at once puts it on the verge of running out of.. some kind of ram i havent figured out what yet 
+    //so i have to juggle mem a bit like this
+    //probably for the best anyway
+    gfx_sprite_t* room_house_start_bg1 = gfx_MallocSprite(room_house_start_bg1_width * 2, room_house_start_bg1_height * 2);
+    zx7_Decompress(room_house_start_bg1, room_house_start_bg1_compressed);
+    gfx_ScaleSprite(room_house_start_bg1, room_house_start_bg1);
+    gfx_Sprite(room_house_start_bg1, 0, 0);
+    free(room_house_start_bg1);
+    
+    gfx_sprite_t* room_house_start_bg2 = gfx_MallocSprite(room_house_start_bg2_width * 2, room_house_start_bg2_height * 2);
+    zx7_Decompress(room_house_start_bg2, room_house_start_bg2_compressed);
+    gfx_ScaleSprite(room_house_start_bg2, room_house_start_bg2);
+    gfx_Sprite(room_house_start_bg2, 160, 0);
+    free(room_house_start_bg2);
+
+    /*gfx_sprite_t* photo = gfx_MallocSprite(photo_width, photo_height);
+    zx7_Decompress(photo, photo_compressed);
+    gfx_sprite_t* computer_off = gfx_MallocSprite(computer_off_width, computer_off_height);
+    zx7_Decompress(computer_off, computer_off_compressed);
     gfx_TransparentSprite(photo, 214, 96);
     gfx_TransparentSprite(computer_off, 118, 48);
+    free(computer_off);
+    free(photo);*/
 }
 
 void loadRoom() {
@@ -24,11 +45,14 @@ void loadRoom() {
         bounding_box_t bbox = {0, 0, 0, 0};
         boundingBoxes[i] = bbox;
     }
-    bounding_box_t photoBox = {214, 96, photo_width, photo_height};
-    boundingBoxes[0] = photoBox;
+    bounding_box_t backWallBox = {66, 0, 254, 99};
+    boundingBoxes[0] = backWallBox;
 
-    bounding_box_t computerBox = {118, 48, computer_off_width, computer_on_height};
-    boundingBoxes[1] = computerBox;
+    bounding_box_t objBox = {129, 98, 121, 33};
+    boundingBoxes[1] = objBox;
+
+    bounding_box_t frontWallBox = {0, 66, 66, 69};
+    boundingBoxes[2] = frontWallBox;
 
     interactable_t interactables[INTERACTABLE_ARR_SIZE];
     for(int i = 0; i < INTERACTABLE_ARR_SIZE; i++) {
@@ -36,13 +60,12 @@ void loadRoom() {
         interactable_t inter = {bbox, NULL, NULL};
         interactables[i] = inter;
     }
-    interactables[0].boundingBox = boundingBoxes[0];
-    interactables[0].onHit = (void(*)(void*))&photoCutscene;
+    bounding_box_t computerBox = {129, 86, 58, 46};
+    interactables[0].boundingBox = computerBox;
+    interactables[0].onHit = (void(*)(void*))&computerCutscene;
 
-    interactables[1].boundingBox = boundingBoxes[1];
-    interactables[1].onHit = (void(*)(void*))&computerCutscene;
-    /*char* photoDialogue2[3] = {"It's a computer!", "It's turned off.", ""};
-    interactables[1].onHitArg = photoDialogue2;*/
+    /*interactables[1].boundingBox = boundingBoxes[1];
+    interactables[1].onHit = (void(*)(void*))&computerCutscene;*/
 
     setBoundingBoxes(boundingBoxes);
     setInteractables(interactables);
@@ -133,6 +156,8 @@ void computerCutscene() {
         showDialogue(offDialogue);
     } else if(computerCutsceneState == 1) {
         showDialogue(onDialogue);
+        gfx_sprite_t* computer_on = gfx_MallocSprite(computer_on_width, computer_on_height);
+        zx7_Decompress(computer_on, computer_on_compressed);
         gfx_TransparentSprite(computer_on, 118, 48);
         setOnDialogueHide(beginCutscene);
     }

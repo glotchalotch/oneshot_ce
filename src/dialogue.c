@@ -1,4 +1,5 @@
 #include <graphx.h>
+#include <compression.h>
 
 #include "gfx/gfx.h"
 
@@ -30,7 +31,10 @@ void showDialogue(const char* string[3]) {
     curString3 = string[2];
 
     portrait = gfx_MallocSprite(80, 80);
+    gfx_sprite_t* niko_portrait_neutral = gfx_MallocSprite(niko_portrait_neutral_width, niko_portrait_neutral_height);
+    zx7_Decompress(niko_portrait_neutral, niko_portrait_neutral_compressed);
     gfx_ScaleSprite(niko_portrait_neutral, portrait);
+    free(niko_portrait_neutral);
 
     //gfx_sprite_t width and height are uint8, so i have to have two sprites w/ one as 255 width
     behindDialogue = gfx_MallocSprite(255, height);
