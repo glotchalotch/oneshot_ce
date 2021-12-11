@@ -35,23 +35,22 @@ void raycastInteractable(uint8_t direction, int spriteX, int spriteY, uint8_t sp
         short bH = interactables[i].boundingBox.height;
         if(bW != 0 && bH != 0) {
             int centerX = spriteX + (spriteW / 2);
-            int centerY = spriteY + (spriteH / 2);
             switch (direction)
             {
             case 3: // right
-                if (gfx_CheckRectangleHotspot(centerX, centerY, 36, 1, bX, bY, bW, bH))
+                if (gfx_CheckRectangleHotspot(centerX, spriteY, 36, 1, bX, bY, bW, bH))
                     hit = true;
                 break;
             case 2: // left
-                if (gfx_CheckRectangleHotspot(centerX - 36, centerY, 36, 1, bX, bY, bW, bH))
+                if (gfx_CheckRectangleHotspot(centerX - 36, spriteY, 36, 1, bX, bY, bW, bH))
                     hit = true;
                 break;
             case 0: // down
-                if (gfx_CheckRectangleHotspot(centerX, centerY + 32, 1, 32, bX, bY, bW, bH))
+                if (gfx_CheckRectangleHotspot(centerX, spriteY - 16, 1, 16, bX, bY, bW, bH))
                     hit = true;
                 break;
             case 1: // up
-                if (gfx_CheckRectangleHotspot(centerX, centerY - 32, 1, 32, bX, bY, bW, bH))
+                if (gfx_CheckRectangleHotspot(centerX, spriteY, 1, 16, bX, bY, bW, bH))
                     hit = true;
                 break;
             }
@@ -74,7 +73,8 @@ bool checkCollision(int tryX, int tryY, uint8_t spriteW, uint8_t spriteH) {
         short bY = boundingBoxes[i].y;
         short bW = boundingBoxes[i].width;
         short bH = boundingBoxes[i].height;
-        if (gfx_CheckRectangleHotspot(tryX, tryY + (spriteH / 2), spriteW, spriteH / 2, bX, bY, bW, bH))
+        //rect is height 1 so that the collision check effectively only checks feet so niko can get close to objects
+        if (gfx_CheckRectangleHotspot(tryX, tryY + spriteH - 1, spriteW, 1, bX, bY, bW, bH))
         {
             blocked = true;
             break;
