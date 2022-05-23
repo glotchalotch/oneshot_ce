@@ -22,6 +22,8 @@ converts:
       - computer_on.png
       - room_house_start_bg1.png
       - room_house_start_bg2.png
+      - cursor.png
+      - remote.png
     compress: zx7
 
 outputs:

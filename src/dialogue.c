@@ -2,6 +2,7 @@
 #include <compression.h>
 
 #include "gfx/gfx.h"
+#include "color.h"
 
 #define height gfx_lcdHeight / 3
 
@@ -13,19 +14,21 @@ const char* curString2;
 const char* curString3;
 bool inDialogue = false;
 
+uint8_t dialogueType;
+
 void* onDialogueHidePtr;
 
 void drawDialogue() {
-    gfx_SetColor(1);
+    gfx_SetColor(COLOR_BLACK);
     gfx_FillRectangle(0, gfx_lcdHeight - height, gfx_lcdWidth, height);
-    gfx_SetColor(0);
+    gfx_SetColor(COLOR_TRANSPARENT_GREEN);
     gfx_PrintStringXY(curString1, 85, gfx_lcdHeight - height + 10);
     gfx_PrintStringXY(curString2, 85, gfx_lcdHeight - height + 30);
     gfx_PrintStringXY(curString3, 85, gfx_lcdHeight - height + 50);
     gfx_TransparentSprite(portrait, 0, gfx_lcdHeight - height);
 }
 
-void showDialogue(const char* string[3]) {
+void showDialogue(const char* string[3], uint8_t dialogueType) {
     curString1 = string[0];
     curString2 = string[1];
     curString3 = string[2];

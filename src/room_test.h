@@ -1,6 +1,6 @@
 void loadRoom();
 void computerCutscene();
-void photoCutscene();
+void remoteCutscene();
 void advanceCutscene();
 
 extern bool inComputerCutscene;

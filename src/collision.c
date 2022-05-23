@@ -26,6 +26,11 @@ interactable_t* getInteractables() {
     return interactables;
 }
 
+void removeInteractable(uint8_t index) {
+    interactable_t i = {{0, 0, 0, 0}, NULL, NULL};
+    interactables[index] = i;
+}
+
 void raycastInteractable(uint8_t direction, int spriteX, int spriteY, uint8_t spriteW, uint8_t spriteH) {
     for(unsigned int i = 0; i < INTERACTABLE_ARR_SIZE; i++) {
         bool hit = false;
@@ -38,19 +43,19 @@ void raycastInteractable(uint8_t direction, int spriteX, int spriteY, uint8_t sp
             switch (direction)
             {
             case 3: // right
-                if (gfx_CheckRectangleHotspot(centerX, spriteY, 36, 1, bX, bY, bW, bH))
+                if (gfx_CheckRectangleHotspot(centerX, spriteY + spriteH, 36, 1, bX, bY, bW, bH))
                     hit = true;
                 break;
             case 2: // left
-                if (gfx_CheckRectangleHotspot(centerX - 36, spriteY, 36, 1, bX, bY, bW, bH))
+                if (gfx_CheckRectangleHotspot(centerX - 36, spriteY + spriteH, 36, 1, bX, bY, bW, bH))
                     hit = true;
                 break;
             case 0: // down
-                if (gfx_CheckRectangleHotspot(centerX, spriteY - 16, 1, 16, bX, bY, bW, bH))
+                if (gfx_CheckRectangleHotspot(centerX, spriteY + spriteH, 1, 16, bX, bY, bW, bH))
                     hit = true;
                 break;
             case 1: // up
-                if (gfx_CheckRectangleHotspot(centerX, spriteY, 1, 16, bX, bY, bW, bH))
+                if (gfx_CheckRectangleHotspot(centerX, spriteY + spriteH - 16, 1, 16, bX, bY, bW, bH))
                     hit = true;
                 break;
             }

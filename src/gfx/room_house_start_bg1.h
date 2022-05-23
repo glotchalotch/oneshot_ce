@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-#define room_house_start_bg1_width 160
-#define room_house_start_bg1_height 240
-#define room_house_start_bg1_size 38402
-#define room_house_start_bg1_compressed_size 2027
-extern unsigned char room_house_start_bg1_compressed[2027];
+#define room_house_start_bg1_width 80
+#define room_house_start_bg1_height 120
+#define room_house_start_bg1_size 9602
+#define room_house_start_bg1_compressed_size 1328
+extern unsigned char room_house_start_bg1_compressed[1328];
 
 #ifdef __cplusplus
 }

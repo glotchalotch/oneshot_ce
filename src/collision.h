@@ -19,6 +19,7 @@ bounding_box_t* getBoundingBoxes();
 
 void setInteractables(interactable_t interactableList[INTERACTABLE_ARR_SIZE]);
 interactable_t* getInteractables();
+void removeInteractable(uint8_t index);
 
 void raycastInteractable(uint8_t direction, int spriteX, int spriteY, uint8_t spriteW, uint8_t spriteH);
 bool checkCollision(int tryX, int tryY, uint8_t spriteW, uint8_t spriteH);

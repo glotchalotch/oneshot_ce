@@ -6,6 +6,8 @@
 #include "dialogue.h"
 #include "collision.h"
 #include "room_test.h"
+#include "inventory.h"
+#include "color.h"
 
 enum direction {Down, Up, Left, Right};
 bool renderNiko = true;
@@ -16,9 +18,9 @@ void initGfx() {
     gfx_Begin();
     gfx_SetDrawBuffer();
     gfx_SetPalette(global_palette, sizeof_global_palette, 0);
-    gfx_SetTransparentColor(0);
+    gfx_SetTransparentColor(COLOR_TRANSPARENT_GREEN);
     gfx_SetTextScale(1, 2);
-    gfx_SetTextFGColor(2);
+    gfx_SetTextFGColor(COLOR_WHITE);
 }
 
 int main() {
@@ -46,8 +48,10 @@ int main() {
     free(niko_right);
     free(niko_down);
 
-    int curX = 6;
-    int curY = 150;
+    int curX = 158;
+    int curY = 134;
+
+    inventory_init();
 
     loadRoom();
 
@@ -70,27 +74,53 @@ int main() {
             switch (key)
             {
             case sk_Right:
-                tryX += moveSpeed;
-                curDir = Right;
-                curSprite = niko_right_scaled;
+                if (inventoryRendering)
+                {
+                    inventory_moveCursor(INVENTORY_CURSORDIR_RIGHT);
+                }
+                else
+                {
+                    tryX += moveSpeed;
+                    curDir = Right;
+                    curSprite = niko_right_scaled;
+                }
                 break;
 
             case sk_Left:
-                tryX -= moveSpeed;
-                curDir = Left;
-                curSprite = niko_left_scaled;
+                if (inventoryRendering)
+                {
+                    inventory_moveCursor(INVENTORY_CURSORDIR_LEFT);
+                } else {
+                    tryX -= moveSpeed;
+                    curDir = Left;
+                    curSprite = niko_left_scaled;
+                }
                 break;
 
             case sk_Up:
-                tryY -= moveSpeed;
-                curDir = Up;
-                curSprite = niko_up_scaled;
+                if (inventoryRendering)
+                {
+                    inventory_moveCursor(INVENTORY_CURSORDIR_UP);
+                } else {
+                    tryY -= moveSpeed;
+                    curDir = Up;
+                    curSprite = niko_up_scaled;
+                }
                 break;
 
             case sk_Down:
-                tryY += moveSpeed;
-                curDir = Down;
-                curSprite = niko_down_scaled;
+                if (inventoryRendering)
+                {
+                    inventory_moveCursor(INVENTORY_CURSORDIR_DOWN);
+                } else {
+                    tryY += moveSpeed;
+                    curDir = Down;
+                    curSprite = niko_down_scaled;
+                }
+                break;
+
+            case sk_Add:
+                inventory_toggle();
                 break;
 
             default:
@@ -99,13 +129,15 @@ int main() {
         }
 
         if(key == sk_Enter) {
-            if(renderNiko) {
+            if(renderNiko && !inventoryRendering) {
                 if (!inDialogue)
                 {
                     raycastInteractable(curDir, curX, curY, niko_down_scaled->width, niko_down_scaled->height);
                 }
                 else
                     hideDialogue();
+            } else if(inventoryRendering) {
+                inventory_selectHighlightedItem();
             }
             if(inComputerCutscene) {
                 advanceCutscene();
@@ -126,8 +158,11 @@ int main() {
             gfx_TransparentSprite(curSprite, curX, curY);
         }
         if(inDialogue) drawDialogue();
+        if(inventoryRendering) inventory_renderInventory();
         if(gfxActive) gfx_BlitBuffer();        
     };
+
+    inventory_clean();
 
     free(niko_down_scaled);
     free(niko_up_scaled);

@@ -17,6 +17,8 @@ extern "C" {
 #include "computer_on.h"
 #include "room_house_start_bg1.h"
 #include "room_house_start_bg2.h"
+#include "cursor.h"
+#include "remote.h"
 
 #ifdef __cplusplus
 }
