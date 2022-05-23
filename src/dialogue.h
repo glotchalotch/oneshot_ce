@@ -3,7 +3,7 @@
 
 extern bool inDialogue;
 
-void showDialogue(const char* string[3], uint8_t dialogueType);
+void showDialogue(const char* string[3], uint8_t type);
 void hideDialogue();
 void drawDialogue();
 

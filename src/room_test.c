@@ -12,6 +12,7 @@
 
 uint8_t computerCutsceneState = 0;
 bool inComputerCutscene = false;
+uint8_t remoteCutsceneState = 0;
 
 gfx_sprite_t* behind_remote;
 
@@ -204,8 +205,14 @@ void getRemote() {
 }
 
 void remoteCutscene() {
-    const char* dialogue[3] = {"It's a framed photo of me", "turning on a computer!", "Hmm..."};
-    showDialogue(dialogue, DIALOGUE_TYPE_PERSONAL);
-    setOnDialogueHide(&getRemote);
-    if(computerCutsceneState == 0) computerCutsceneState = 1;
+    if(remoteCutsceneState == 0) {
+        const char *dialogue[3] = {"", "[There's a TV remote here.]", ""};
+        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+        setOnDialogueHide(&remoteCutscene);
+        remoteCutsceneState = 1;
+    } else {
+        const char *dialogue[3] = {"", "[Niko picks it up.]", ""};
+        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+        setOnDialogueHide(&getRemote);
+    }
 }
