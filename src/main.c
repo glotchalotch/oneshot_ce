@@ -5,7 +5,7 @@
 #include "gfx/gfx.h"
 #include "dialogue.h"
 #include "collision.h"
-#include "room_test.h"
+#include "room_start.h"
 #include "inventory.h"
 #include "color.h"
 
@@ -53,7 +53,7 @@ int main() {
 
     inventory_init();
 
-    loadRoom();
+    room_start_loadRoom();
 
     gfx_sprite_t *behind_niko = gfx_MallocSprite(40, 56);
     gfx_GetSprite(behind_niko, curX, curY);
@@ -65,9 +65,12 @@ int main() {
 
     uint8_t moveSpeed = 16;
 
+    bool justWarped = false;
+
     sk_key_t key;
     while((key = os_GetCSC()) != sk_Clear && !endProgram) {
         if(renderNiko) gfx_Sprite(behind_niko, curX, curY);
+        checkAndWarp(&curX, &curY, curSprite->width, curSprite->height, &justWarped);
         int tryX = curX;
         int tryY = curY;
         if(!inDialogue && renderNiko) {
@@ -139,9 +142,9 @@ int main() {
             } else if(inventoryRendering) {
                 inventory_selectHighlightedItem();
             }
-            if(inComputerCutscene) {
+            /*if(inComputerCutscene) {
                 advanceCutscene();
-            }
+            }*/
         }
 
         if(tryY != curY || tryX != curX) {

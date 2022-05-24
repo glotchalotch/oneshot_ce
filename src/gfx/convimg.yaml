@@ -24,6 +24,9 @@ converts:
       - room_house_start_bg2.png
       - cursor.png
       - remote.png
+      - room_house_bathroom_bg1.png
+      - room_house_bathroom_bg2.png
+      - room_house_bathroom_bg3.png
     compress: zx7
 
 outputs:

@@ -4,6 +4,7 @@
 
 bounding_box_t boundingBoxes[BBOX_ARR_SIZE];
 interactable_t interactables[INTERACTABLE_ARR_SIZE];
+warp_t warps[WARP_ARR_SIZE];
 
 //TODO: it would probably wise to convert bboxes and interactables to pointers
 void setBoundingBoxes(bounding_box_t boxes[BBOX_ARR_SIZE]) {
@@ -29,6 +30,12 @@ interactable_t* getInteractables() {
 void removeInteractable(uint8_t index) {
     interactable_t i = {{0, 0, 0, 0}, NULL, NULL};
     interactables[index] = i;
+}
+
+void setWarps(warp_t warpList[WARP_ARR_SIZE]) {
+    for(int i = 0; i < WARP_ARR_SIZE; i++) {
+        warps[i] = warpList[i];
+    }
 }
 
 void raycastInteractable(uint8_t direction, int spriteX, int spriteY, uint8_t spriteW, uint8_t spriteH) {
@@ -86,4 +93,17 @@ bool checkCollision(int tryX, int tryY, uint8_t spriteW, uint8_t spriteH) {
         }
     }
     return blocked;
+}
+
+void checkAndWarp(int* curX, int* curY, uint8_t spriteWidth, uint8_t spriteHeight, bool* justWarped) {
+    for(int i = 0; i < WARP_ARR_SIZE; i++) {
+        if(gfx_CheckRectangleHotspot(*curX + (spriteWidth / 2), *curY + spriteHeight, 1, 1, warps[i].boundingBox.x, warps[i].boundingBox.y, warps[i].boundingBox.width, warps[i].boundingBox.height)) {
+            if(!*justWarped) {
+                warps[i].roomLoadFunction();
+                *curX = warps[i].destX;
+                *curY = warps[i].destY;
+                *justWarped = true;
+            }
+        } else *justWarped = false;
+    }
 }

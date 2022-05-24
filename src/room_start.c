@@ -6,9 +6,10 @@
 #include "dialogue.h"
 #include "main.h"
 #include "collision.h"
-#include "room_test.h"
+#include "room_start.h"
 #include "color.h"
 #include "inventory.h"
+#include "room_bathroom.h"
 
 uint8_t computerCutsceneState = 0;
 bool inComputerCutscene = false;
@@ -16,7 +17,49 @@ uint8_t remoteCutsceneState = 0;
 
 gfx_sprite_t* behind_remote;
 
-void renderRoom() {
+void beginCutscene() {
+    /*gfx_FillScreen(COLOR_LIGHT_BLUE);
+    computerCutsceneState = 1;
+    renderNiko = false;
+    inComputerCutscene = true;*/
+}
+
+void getRemote() {
+    static item_t remote = {ITEM_HOUSE_REMOTE, "remote"};
+    inventory_addItem(&remote);
+    gfx_Sprite(behind_remote, 262, 150);
+    free(behind_remote);
+    removeInteractable(1);
+}
+
+void remoteCutscene() {
+    if(remoteCutsceneState == 0) {
+        const char *dialogue[3] = {"", "[There's a TV remote here.]", ""};
+        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+        setOnDialogueHide(&remoteCutscene);
+        remoteCutsceneState = 1;
+    } else {
+        const char *dialogue[3] = {"", "[Niko picks it up.]", ""};
+        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+        setOnDialogueHide(&getRemote);
+    }
+}
+
+void computerCutscene() {
+    /*const char* offDialogue[3] = {"It's a computer!", "It's turned off.", ""};
+    const char* onDialogue[3] = {"It turned on!", "", ""};
+    if(computerCutsceneState == 0) {
+        showDialogue(offDialogue, DIALOGUE_TYPE_PERSONAL);
+    } else if(computerCutsceneState == 1) {
+        showDialogue(onDialogue, DIALOGUE_TYPE_PERSONAL);
+        gfx_sprite_t* computer_on = gfx_MallocSprite(computer_on_width, computer_on_height);
+        zx7_Decompress(computer_on, computer_on_compressed);
+        gfx_TransparentSprite(computer_on, 118, 48);
+        setOnDialogueHide(beginCutscene);
+    }*/
+}
+
+void room_start_renderRoom() {
     //rendering the bg all at once puts it on the verge of running out of ram
     //so i have to juggle mem a bit like this
     //probably for the best anyway
@@ -42,19 +85,10 @@ void renderRoom() {
     zx7_Decompress(remote, remote_compressed);
     gfx_TransparentSprite(remote, 262, 150);
     free(remote);
-
-    /*gfx_sprite_t* photo = gfx_MallocSprite(photo_width, photo_height);
-    zx7_Decompress(photo, photo_compressed);
-    gfx_sprite_t* computer_off = gfx_MallocSprite(computer_off_width, computer_off_height);
-    zx7_Decompress(computer_off, computer_off_compressed);
-    gfx_TransparentSprite(photo, 214, 96);
-    gfx_TransparentSprite(computer_off, 118, 48);
-    free(computer_off);
-    free(photo);*/
 }
 
-void loadRoom() {
-    renderRoom();
+void room_start_loadRoom() {
+    room_start_renderRoom();
 
     bounding_box_t boundingBoxes[BBOX_ARR_SIZE];
     for(int i = 0; i < BBOX_ARR_SIZE; i++) {
@@ -82,9 +116,6 @@ void loadRoom() {
     bounding_box_t rightWallBox = {317, 0, 3, 198};
     boundingBoxes[6] = rightWallBox;
 
-    bounding_box_t remoteBox = {262, 150, 23, 26};
-    //boundingBoxes[7] = remoteBox;
-
     interactable_t interactables[INTERACTABLE_ARR_SIZE];
     for(int i = 0; i < INTERACTABLE_ARR_SIZE; i++) {
         bounding_box_t bbox = {0, 0, 0, 0};
@@ -95,22 +126,29 @@ void loadRoom() {
     interactables[0].boundingBox = computerBox;
     interactables[0].onHit = (void(*)(void*))&computerCutscene;
 
-    interactables[1].boundingBox = remoteBox;
-    interactables[1].onHit = (void(*)(void*))&remoteCutscene;
+    if(remoteCutsceneState < 1) {
+        bounding_box_t remoteBox = {262, 150, 23, 26};
+        interactables[1].boundingBox = remoteBox;
+        interactables[1].onHit = (void(*)(void*))&remoteCutscene;
+    }
 
+    warp_t warps[WARP_ARR_SIZE];
+    for(int i = 0; i < WARP_ARR_SIZE; i++) {
+        bounding_box_t bbox = {0, 0, 0, 0};
+        warp_t inter = {bbox, NULL, 0, 0};
+        warps[i] = inter;
+    }
+    bounding_box_t bathroomWarpBox = {2, 164, 32, 32};
+    warp_t bathroomWarp = {bathroomWarpBox, &room_bathroom_loadRoom, 240, 176};
+    warps[0] = bathroomWarp;
+
+    setWarps(warps);
     setBoundingBoxes(boundingBoxes);
     setInteractables(interactables);
 }
 
-void beginCutscene() {
-    gfx_FillScreen(COLOR_LIGHT_BLUE);
-    computerCutsceneState = 1;
-    renderNiko = false;
-    inComputerCutscene = true;
-}
-
 void advanceCutscene() {
-    gfx_SetColor(COLOR_WHITE);
+    /*gfx_SetColor(COLOR_WHITE);
     gfx_SetTextFGColor(COLOR_BLACK);
     const char* string;
     switch(computerCutsceneState) {
@@ -177,42 +215,5 @@ void advanceCutscene() {
         gfx_FillRectangle(gfx_lcdWidth/2 - 140, gfx_lcdHeight/2 - 60, 280, 120);
         gfx_PrintStringXY(string, gfx_lcdWidth/2 - (gfx_GetStringWidth(string)/2), gfx_lcdHeight/2 - 5);
     }
-    computerCutsceneState++;
-}
-
-void computerCutscene() {
-    const char* offDialogue[3] = {"It's a computer!", "It's turned off.", ""};
-    const char* onDialogue[3] = {"It turned on!", "", ""};
-    if(computerCutsceneState == 0) {
-        showDialogue(offDialogue, DIALOGUE_TYPE_PERSONAL);
-    } else if(computerCutsceneState == 1) {
-        showDialogue(onDialogue, DIALOGUE_TYPE_PERSONAL);
-        gfx_sprite_t* computer_on = gfx_MallocSprite(computer_on_width, computer_on_height);
-        zx7_Decompress(computer_on, computer_on_compressed);
-        gfx_TransparentSprite(computer_on, 118, 48);
-        setOnDialogueHide(beginCutscene);
-    }
-}
-
-void getRemote() {
-    item_t* remote = malloc(sizeof(item_t));
-    remote->id = ITEM_HOUSE_REMOTE;
-    remote->name = "remote";
-    inventory_addItem(remote);
-    gfx_Sprite(behind_remote, 262, 150);
-    free(behind_remote);
-    removeInteractable(1);
-}
-
-void remoteCutscene() {
-    if(remoteCutsceneState == 0) {
-        const char *dialogue[3] = {"", "[There's a TV remote here.]", ""};
-        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
-        setOnDialogueHide(&remoteCutscene);
-        remoteCutsceneState = 1;
-    } else {
-        const char *dialogue[3] = {"", "[Niko picks it up.]", ""};
-        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
-        setOnDialogueHide(&getRemote);
-    }
+    computerCutsceneState++;*/
 }

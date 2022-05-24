@@ -19,6 +19,9 @@ extern "C" {
 #include "room_house_start_bg2.h"
 #include "cursor.h"
 #include "remote.h"
+#include "room_house_bathroom_bg1.h"
+#include "room_house_bathroom_bg2.h"
+#include "room_house_bathroom_bg3.h"
 
 #ifdef __cplusplus
 }

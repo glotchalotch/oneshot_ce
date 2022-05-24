@@ -19,7 +19,7 @@ uint8_t cursorPos = 0;
 
 bool inventoryRendering = false;
 
-//reminder: don't free this null item until final inventory cleanup, most inventory entries will be pointing to this object
+//reminder: don't try to free this null item
 item_t nullItem = {
     ITEM_NONE,
     ""
@@ -54,14 +54,11 @@ void inventory_init() {
     for(int i = 0; i < INVENTORY_LENGTH; i++) {
         inventory[i] = &nullItem;
     }
-    item_t* i = malloc(sizeof(item_t));
-    i->id = ITEM_LIGHTBULB;
-    i->name = "lightbulb";
 }
 
 void inventory_clean() {
     for(int i = 0; i < INVENTORY_LENGTH; i++) {
-        free(inventory[i]);
+        if(inventory[i] != &nullItem) free(inventory[i]);
     }
 }
 
