@@ -2,3 +2,6 @@
 #define COLOR_BLACK 1
 #define COLOR_WHITE 2
 #define COLOR_LIGHT_BLUE 3
+#define COLOR_YELLOW 4
+#define COLOR_RED 5
+#define COLOR_GRAY 6

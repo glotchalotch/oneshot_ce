@@ -23,8 +23,19 @@ void initGfx() {
     gfx_SetTextFGColor(COLOR_WHITE);
 }
 
+void unzipScaleDrawSprite(void* compressed_sprite, uint8_t compressedW, uint8_t compressedH, uint8_t scaleFactor, int x, int y) {
+    gfx_sprite_t* sprite = gfx_MallocSprite(compressedW * scaleFactor, compressedH * scaleFactor);
+    gfx_sprite_t* spriteUncompressed = gfx_MallocSprite(compressedW, compressedH);
+    zx7_Decompress(spriteUncompressed, compressed_sprite);
+    gfx_ScaleSprite(spriteUncompressed, sprite);
+    gfx_Sprite(sprite, x, y);
+    free(sprite);
+    free(spriteUncompressed);
+}
+
 int main() {
     initGfx();    
+        //dbg_SetBreakpoint(&inventory_toggle);
 
     gfx_sprite_t *niko_down_scaled = gfx_MallocSprite(40, 54);
     gfx_sprite_t *niko_down = gfx_MallocSprite(20, 27);
@@ -42,6 +53,11 @@ int main() {
     gfx_sprite_t *niko_right = gfx_MallocSprite(20, 28);
     zx7_Decompress(niko_right, niko_right_compressed);
     gfx_ScaleSprite(niko_right, niko_right_scaled);
+
+    colored_text_t nullColoredText = {0, 0, 0, 0};
+    for(int i = 0; i < 4; i++) {
+        setColoredText(i, &nullColoredText);
+    }
 
     free(niko_left);
     free(niko_up);
@@ -65,12 +81,10 @@ int main() {
 
     uint8_t moveSpeed = 16;
 
-    bool justWarped = false;
-
     sk_key_t key;
     while((key = os_GetCSC()) != sk_Clear && !endProgram) {
         if(renderNiko) gfx_Sprite(behind_niko, curX, curY);
-        checkAndWarp(&curX, &curY, curSprite->width, curSprite->height, &justWarped);
+        checkAndWarp(&curX, &curY, curSprite->width, curSprite->height);
         int tryX = curX;
         int tryY = curY;
         if(!inDialogue && renderNiko) {

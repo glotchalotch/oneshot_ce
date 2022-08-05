@@ -33,4 +33,4 @@ void setWarps(warp_t warpList[WARP_ARR_SIZE]);
 
 void raycastInteractable(uint8_t direction, int spriteX, int spriteY, uint8_t spriteW, uint8_t spriteH);
 bool checkCollision(int tryX, int tryY, uint8_t spriteW, uint8_t spriteH);
-void checkAndWarp(int* curX, int* curY, uint8_t spriteWidth, uint8_t spriteHeight, bool* justWarped);
+void checkAndWarp(int* curX, int* curY, uint8_t spriteWidth, uint8_t spriteHeight);

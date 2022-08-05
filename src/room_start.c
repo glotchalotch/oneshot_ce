@@ -1,6 +1,7 @@
 #include <graphx.h>
 #include <tice.h>
 #include <compression.h>
+#include <debug.h>
 
 #include "gfx/gfx.h"
 #include "dialogue.h"
@@ -24,12 +25,43 @@ void beginCutscene() {
     inComputerCutscene = true;*/
 }
 
-void getRemote() {
-    static item_t remote = {ITEM_HOUSE_REMOTE, "remote"};
-    inventory_addItem(&remote);
-    gfx_Sprite(behind_remote, 262, 150);
-    free(behind_remote);
-    removeInteractable(1);
+void windowCutscene() {
+    static uint8_t windowCutsceneState = 0;
+    if(inventory_getCurrentItem()->id == ITEM_HOUSE_REMOTE) {
+        switch(windowCutsceneState) {
+            case 0: {
+                const char *dialogue[3] = {"", "[In the faint light,", "Niko can glimpse the face of the remote.]"};
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                setOnDialogueHide(&windowCutscene);
+                windowCutsceneState++;
+                break;
+            }
+            case 1: {
+                const char *dialogue[3] = {"", "[All of the numbers except", "4, 6, 2, and 8 are missing.]"};
+                colored_text_t textStruct1 = {2, 0, 1, COLOR_TRANSPARENT_GREEN};
+                colored_text_t textStruct2 = {2, 3, 1, COLOR_LIGHT_BLUE};
+                colored_text_t textStruct3 = {2, 6, 1, COLOR_YELLOW};
+                colored_text_t textStruct4 = {2, 13, 1, COLOR_RED};
+                setColoredText(0, &textStruct1);
+                setColoredText(1, &textStruct2);
+                setColoredText(2, &textStruct3);
+                setColoredText(3, &textStruct4);
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                windowCutsceneState++;
+                break;
+            }
+            case 2: {
+                const char *dialogue[3] = {"", "[They're marked in bright colors.]", ""};
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                windowCutsceneState = 0;
+                setOnDialogueHide(NULL);
+                break;
+            }
+        }
+        
+    } else {
+
+    }
 }
 
 void remoteCutscene() {
@@ -38,54 +70,44 @@ void remoteCutscene() {
         showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
         setOnDialogueHide(&remoteCutscene);
         remoteCutsceneState = 1;
-    } else {
+    } else if(remoteCutsceneState == 1) {
         const char *dialogue[3] = {"", "[Niko picks it up.]", ""};
         showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
-        setOnDialogueHide(&getRemote);
+        remoteCutsceneState = 2;
+        
+    } else if(remoteCutsceneState == 2) {
+        static item_t remote = {ITEM_HOUSE_REMOTE, "remote"};
+        inventory_addItem(&remote);
+        gfx_Sprite(behind_remote, 262, 150);
+        free(behind_remote);
+        removeInteractable(1);
     }
 }
 
 void computerCutscene() {
-    /*const char* offDialogue[3] = {"It's a computer!", "It's turned off.", ""};
-    const char* onDialogue[3] = {"It turned on!", "", ""};
-    if(computerCutsceneState == 0) {
-        showDialogue(offDialogue, DIALOGUE_TYPE_PERSONAL);
-    } else if(computerCutsceneState == 1) {
-        showDialogue(onDialogue, DIALOGUE_TYPE_PERSONAL);
-        gfx_sprite_t* computer_on = gfx_MallocSprite(computer_on_width, computer_on_height);
-        zx7_Decompress(computer_on, computer_on_compressed);
-        gfx_TransparentSprite(computer_on, 118, 48);
-        setOnDialogueHide(beginCutscene);
-    }*/
+    renderNiko = false;
+    
 }
 
 void room_start_renderRoom() {
     //rendering the bg all at once puts it on the verge of running out of ram
     //so i have to juggle mem a bit like this
     //probably for the best anyway
-    gfx_sprite_t* room_house_start_bg1 = gfx_MallocSprite(room_house_start_bg1_width * 2, room_house_start_bg1_height * 2);
-    gfx_sprite_t* room_house_start_bg1_uncompressed = gfx_MallocSprite(room_house_start_bg1_width, room_house_start_bg1_height);
-    zx7_Decompress(room_house_start_bg1_uncompressed, room_house_start_bg1_compressed);
-    gfx_ScaleSprite(room_house_start_bg1_uncompressed, room_house_start_bg1);
-    gfx_Sprite(room_house_start_bg1, 0, 0);
-    free(room_house_start_bg1_uncompressed);
-    free(room_house_start_bg1);
-    
-    gfx_sprite_t* room_house_start_bg2 = gfx_MallocSprite(room_house_start_bg2_width * 2, room_house_start_bg2_height * 2);
-    gfx_sprite_t* room_house_start_bg2_uncompressed = gfx_MallocSprite(room_house_start_bg2_width, room_house_start_bg2_height);
-    zx7_Decompress(room_house_start_bg2_uncompressed, room_house_start_bg2_compressed);
-    gfx_ScaleSprite(room_house_start_bg2_uncompressed, room_house_start_bg2);
-    gfx_Sprite(room_house_start_bg2, 160, 0);
-    free(room_house_start_bg2_uncompressed);
-    free(room_house_start_bg2);
+    unzipScaleDrawSprite(room_house_start_bg1_compressed, room_house_start_bg1_width, room_house_start_bg1_height, 2, 0, 0);
+    unzipScaleDrawSprite(room_house_start_bg2_compressed, room_house_start_bg2_width, room_house_start_bg2_height, 2, 80, 0);
+    unzipScaleDrawSprite(room_house_start_bg3_compressed, room_house_start_bg3_width, room_house_start_bg3_height, 2, 160, 0);
+    unzipScaleDrawSprite(room_house_start_bg4_compressed, room_house_start_bg4_width, room_house_start_bg4_height, 2, 240, 0);
 
-    gfx_sprite_t* remote = gfx_MallocSprite(remote_width, remote_height);
-    behind_remote = gfx_MallocSprite(remote_width, remote_height);
-    gfx_GetSprite(behind_remote, 262, 150);
-    zx7_Decompress(remote, remote_compressed);
-    gfx_TransparentSprite(remote, 262, 150);
-    free(remote);
+    if(remoteCutsceneState < 1) {
+        gfx_sprite_t *remote = gfx_MallocSprite(remote_width, remote_height);
+        behind_remote = gfx_MallocSprite(remote_width, remote_height);
+        gfx_GetSprite(behind_remote, 262, 150);
+        zx7_Decompress(remote, remote_compressed);
+        gfx_TransparentSprite(remote, 262, 150);
+        free(remote);
+    }
 }
+    
 
 void room_start_loadRoom() {
     room_start_renderRoom();
@@ -131,6 +153,10 @@ void room_start_loadRoom() {
         interactables[1].boundingBox = remoteBox;
         interactables[1].onHit = (void(*)(void*))&remoteCutscene;
     }
+
+    bounding_box_t windowBox = {256, 80, 56, 52};
+    interactables[2].boundingBox = windowBox;
+    interactables[2].onHit = &windowCutscene;
 
     warp_t warps[WARP_ARR_SIZE];
     for(int i = 0; i < WARP_ARR_SIZE; i++) {
@@ -212,8 +238,8 @@ void advanceCutscene() {
         }
     }
     if(computerCutsceneState >= 2 && computerCutsceneState != 8 && computerCutsceneState < 11) {
-        gfx_FillRectangle(gfx_lcdWidth/2 - 140, gfx_lcdHeight/2 - 60, 280, 120);
-        gfx_PrintStringXY(string, gfx_lcdWidth/2 - (gfx_GetStringWidth(string)/2), gfx_lcdHeight/2 - 5);
+        gfx_FillRectangle(GFX_LCD_WIDTH/2 - 140, GFX_LCD_HEIGHT/2 - 60, 280, 120);
+        gfx_PrintStringXY(string, GFX_LCD_WIDTH/2 - (gfx_GetStringWidth(string)/2), GFX_LCD_HEIGHT/2 - 5);
     }
     computerCutsceneState++;*/
 }

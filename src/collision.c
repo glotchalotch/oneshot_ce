@@ -95,15 +95,20 @@ bool checkCollision(int tryX, int tryY, uint8_t spriteW, uint8_t spriteH) {
     return blocked;
 }
 
-void checkAndWarp(int* curX, int* curY, uint8_t spriteWidth, uint8_t spriteHeight, bool* justWarped) {
+bool justWarped = false;
+
+void checkAndWarp(int* curX, int* curY, uint8_t spriteWidth, uint8_t spriteHeight) {
+    warp_t* foundWarp = NULL;
     for(int i = 0; i < WARP_ARR_SIZE; i++) {
         if(gfx_CheckRectangleHotspot(*curX + (spriteWidth / 2), *curY + spriteHeight, 1, 1, warps[i].boundingBox.x, warps[i].boundingBox.y, warps[i].boundingBox.width, warps[i].boundingBox.height)) {
-            if(!*justWarped) {
-                warps[i].roomLoadFunction();
+            foundWarp = &warps[i];
+            if(!justWarped) {
                 *curX = warps[i].destX;
                 *curY = warps[i].destY;
-                *justWarped = true;
+                justWarped = true;
+                warps[i].roomLoadFunction();
             }
-        } else *justWarped = false;
+        }
     }
+    if(foundWarp == NULL) justWarped = false;
 }
