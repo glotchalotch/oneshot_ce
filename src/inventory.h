@@ -25,8 +25,6 @@ typedef struct item {
     //const char* description[x];
 } item_t;
 
-extern bool inventoryRendering;
-
 void inventory_init();
 void inventory_toggle();
 void inventory_clean();
@@ -37,3 +35,4 @@ void inventory_addItem(item_t* item);
 void inventory_removeItem(item_t* item);
 item_t* inventory_getCurrentItem();
 void inventory_inputHandler(sk_key_t key);
+bool inventory_isInventoryRendering();

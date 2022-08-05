@@ -136,6 +136,10 @@ item_t* inventory_getCurrentItem() {
     return currentItem;
 }
 
+bool inventory_isInventoryRendering() {
+    return inventoryRendering;
+}
+
 void inventory_inputHandler(sk_key_t key) {
     switch(key) {
         case sk_Down:

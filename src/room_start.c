@@ -85,8 +85,7 @@ void remoteCutscene() {
 }
 
 void computerCutscene() {
-    renderNiko = false;
-    
+    setRenderNiko(false);
 }
 
 void room_start_renderRoom() {

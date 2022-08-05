@@ -54,6 +54,18 @@ void unzipScaleDrawSprite(void* compressed_sprite, uint8_t compressedW, uint8_t 
     free(spriteUncompressed);
 }
 
+void setRenderNiko(bool render) {
+    renderNiko = render;
+}
+
+void setGfxActive(bool active) {
+    gfxActive = active;
+}
+
+void markEndProgram() {
+    endProgram = true;
+}
+
 void defaultInputHandler(sk_key_t key) {
     tryX = curX;
     tryY = curY;
@@ -149,7 +161,7 @@ int main() {
             gfx_TransparentSprite(curSprite, curX, curY);
         }
         if(inDialogue) drawDialogue();
-        if(inventoryRendering) inventory_renderInventory();
+        if(inventory_isInventoryRendering()) inventory_renderInventory();
         if(gfxActive) gfx_BlitBuffer();        
     };
 
