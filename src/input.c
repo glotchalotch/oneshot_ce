@@ -1,13 +1,13 @@
 #include "input.h"
 
-void (*currentInputHandler)(uint8_t);
-void setInputHandler(void (*handler)(uint8_t)) {
+void (*currentInputHandler)(sk_key_t);
+void setInputHandler(void (*handler)(sk_key_t)) {
     currentInputHandler = handler;
 }
 void* getInputHandler() {
     return currentInputHandler;
 }
 
-void handleInput(uint8_t direction) {
-    currentInputHandler(direction);
+void handleInput(sk_key_t key) {
+    currentInputHandler(key);
 }

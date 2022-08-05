@@ -4,6 +4,8 @@
 #include "gfx/gfx.h"
 #include <compression.h>
 #include "color.h"
+#include "input.h"
+#include "main.h"
 
 #define INVENTORY_LENGTH 10
 #define INVENTORY_WIDTH GFX_LCD_WIDTH
@@ -118,6 +120,7 @@ void inventory_toggle() {
         zx7_Decompress(cursor, cursor_compressed);
         inventory_renderInventory();
         inventoryRendering = true;
+        setInputHandler(inventory_inputHandler);
     } else {
         gfx_Sprite(behind_inventory1, 0, 0);
         gfx_Sprite(behind_inventory2, INVENTORY_WIDTH / 2, 0);
@@ -125,9 +128,32 @@ void inventory_toggle() {
         free(behind_inventory2);
         free(cursor);
         inventoryRendering = false;
+        setInputHandler(defaultInputHandler);
     }
 }
 
 item_t* inventory_getCurrentItem() {
     return currentItem;
+}
+
+void inventory_inputHandler(sk_key_t key) {
+    switch(key) {
+        case sk_Down:
+            inventory_moveCursor(INVENTORY_CURSORDIR_DOWN);
+            break;
+        case sk_Up:
+            inventory_moveCursor(INVENTORY_CURSORDIR_UP);
+            break;
+        case sk_Left:
+            inventory_moveCursor(INVENTORY_CURSORDIR_LEFT);
+            break;
+        case sk_Right:
+            inventory_moveCursor(INVENTORY_CURSORDIR_RIGHT);
+            break;
+        case sk_Enter:
+            inventory_selectHighlightedItem();
+            break;
+        case sk_Add:
+            inventory_toggle();
+    }
 }

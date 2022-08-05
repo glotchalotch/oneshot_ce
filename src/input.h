@@ -1,5 +1,5 @@
 #include <tice.h>
 
-void setInputHandler(void (*handler)(uint8_t));
+void setInputHandler(void (*handler)(sk_key_t));
 void* getInputHandler();
-void handleInput(uint8_t direction);
+void handleInput(sk_key_t key);

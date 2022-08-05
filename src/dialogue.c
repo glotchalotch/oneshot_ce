@@ -5,6 +5,8 @@
 #include "gfx/gfx.h"
 #include "color.h"
 #include "dialogue.h"
+#include "input.h"
+#include "main.h"
 
 #define height GFX_LCD_HEIGHT / 3
 
@@ -117,6 +119,8 @@ void showDialogue(const char* string[3], uint8_t type) {
 
     drawDialogue();
 
+    setInputHandler(dialogue_inputHandler);
+
     inDialogue = true;
 }
 
@@ -162,4 +166,11 @@ void hideDialogue() {
 
 void setOnDialogueHide(void (*onHide)()) {
     onDialogueHidePtr = onHide;
+}
+
+void dialogue_inputHandler(sk_key_t key) {
+    if(key == sk_Enter) {
+        setInputHandler(defaultInputHandler);
+        hideDialogue();
+    }
 }

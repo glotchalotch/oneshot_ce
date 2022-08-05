@@ -36,3 +36,4 @@ void inventory_selectHighlightedItem();
 void inventory_addItem(item_t* item);
 void inventory_removeItem(item_t* item);
 item_t* inventory_getCurrentItem();
+void inventory_inputHandler(sk_key_t key);

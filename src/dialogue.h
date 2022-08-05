@@ -18,3 +18,5 @@ void hideDialogue();
 void drawDialogue();
 
 void setOnDialogueHide(void (*onHide)());
+
+void dialogue_inputHandler(sk_key_t key);
