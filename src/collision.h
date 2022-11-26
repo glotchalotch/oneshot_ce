@@ -24,11 +24,15 @@ typedef struct warp {
 
 void setBoundingBoxes(bounding_box_t boxes[BBOX_ARR_SIZE]);
 bounding_box_t* getBoundingBoxes();
+void makeEmptyBoundingBoxArray(bounding_box_t* array);
 
 void setInteractables(interactable_t interactableList[INTERACTABLE_ARR_SIZE]);
 interactable_t* getInteractables();
+void makeEmptyInteractableArray(interactable_t* array);
 void removeInteractable(uint8_t index);
 
+warp_t* getWarps();
+void makeEmptyWarpArray(warp_t* array);
 void setWarps(warp_t warpList[WARP_ARR_SIZE]);
 
 void raycastInteractable(uint8_t direction, int spriteX, int spriteY, uint8_t spriteW, uint8_t spriteH);

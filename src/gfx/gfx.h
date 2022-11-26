@@ -24,6 +24,10 @@ extern "C" {
 #include "room_house_bathroom_bg1.h"
 #include "room_house_bathroom_bg2.h"
 #include "room_house_bathroom_bg3.h"
+#include "room_house_livingroom_bg1.h"
+#include "room_house_livingroom_bg2.h"
+#include "room_house_livingroom_bg3.h"
+#include "room_house_livingroom_bg4.h"
 
 #ifdef __cplusplus
 }

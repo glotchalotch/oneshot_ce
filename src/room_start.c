@@ -11,19 +11,18 @@
 #include "color.h"
 #include "inventory.h"
 #include "room_bathroom.h"
+#include "input.h"
+#include "room_livingroom.h"
 
 uint8_t computerCutsceneState = 0;
 bool inComputerCutscene = false;
 uint8_t remoteCutsceneState = 0;
+char curPassword[4] = {'0', '0', '0', '0'};
+uint8_t curPasswordIndex = 0;
 
 gfx_sprite_t* behind_remote;
 
-void beginCutscene() {
-    /*gfx_FillScreen(COLOR_LIGHT_BLUE);
-    computerCutsceneState = 1;
-    renderNiko = false;
-    inComputerCutscene = true;*/
-}
+void computerCutscene(); // c is so silly i love having to declare functions in order!
 
 void windowCutscene() {
     static uint8_t windowCutsceneState = 0;
@@ -84,10 +83,6 @@ void remoteCutscene() {
     }
 }
 
-void computerCutscene() {
-    setRenderNiko(false);
-}
-
 void room_start_renderRoom() {
     //rendering the bg all at once puts it on the verge of running out of ram
     //so i have to juggle mem a bit like this
@@ -112,10 +107,8 @@ void room_start_loadRoom() {
     room_start_renderRoom();
 
     bounding_box_t boundingBoxes[BBOX_ARR_SIZE];
-    for(int i = 0; i < BBOX_ARR_SIZE; i++) {
-        bounding_box_t bbox = {0, 0, 0, 0};
-        boundingBoxes[i] = bbox;
-    }
+    makeEmptyBoundingBoxArray(boundingBoxes);
+    
     bounding_box_t backWallBox = {66, 0, 254, 99};
     boundingBoxes[0] = backWallBox;
 
@@ -138,11 +131,8 @@ void room_start_loadRoom() {
     boundingBoxes[6] = rightWallBox;
 
     interactable_t interactables[INTERACTABLE_ARR_SIZE];
-    for(int i = 0; i < INTERACTABLE_ARR_SIZE; i++) {
-        bounding_box_t bbox = {0, 0, 0, 0};
-        interactable_t inter = {bbox, NULL, NULL};
-        interactables[i] = inter;
-    }
+    makeEmptyInteractableArray(interactables);
+
     bounding_box_t computerBox = {129, 86, 58, 46};
     interactables[0].boundingBox = computerBox;
     interactables[0].onHit = (void(*)(void*))&computerCutscene;
@@ -157,88 +147,221 @@ void room_start_loadRoom() {
     interactables[2].boundingBox = windowBox;
     interactables[2].onHit = &windowCutscene;
 
-    warp_t warps[WARP_ARR_SIZE];
-    for(int i = 0; i < WARP_ARR_SIZE; i++) {
-        bounding_box_t bbox = {0, 0, 0, 0};
-        warp_t inter = {bbox, NULL, 0, 0};
-        warps[i] = inter;
-    }
+    warp_t warps[WARP_ARR_SIZE]; 
+    makeEmptyWarpArray(warps);
+
     bounding_box_t bathroomWarpBox = {2, 164, 32, 32};
     warp_t bathroomWarp = {bathroomWarpBox, &room_bathroom_loadRoom, 240, 176};
     warps[0] = bathroomWarp;
+
+    if(computerCutsceneState == 18) {
+        warp_t livingRoomWarp = {{226, 196, 32, 32}, &room_livingroom_loadRoom, 55, 46};
+        warps[1] = livingRoomWarp;
+    }
 
     setWarps(warps);
     setBoundingBoxes(boundingBoxes);
     setInteractables(interactables);
 }
 
-void advanceCutscene() {
-    /*gfx_SetColor(COLOR_WHITE);
-    gfx_SetTextFGColor(COLOR_BLACK);
+void setCurPasswordIndex(uint8_t index) {
+    curPasswordIndex = index;
+    if(curPasswordIndex > 250) curPasswordIndex = 3; // for underflow
+    if(curPasswordIndex > 3) curPasswordIndex = 0; // for max cap
+}
+
+void typeNumber(char number) {
+    uint8_t x = 10 + (20 * curPasswordIndex);
+    gfx_SetTextXY(x, 20);
+    gfx_SetColor(COLOR_BLACK);
+    gfx_FillRectangle(x - 2, 18, 20, 20);
+    uint8_t textColor = COLOR_WHITE;
+    switch(curPasswordIndex) {
+        case 0:
+            textColor = COLOR_LIGHT_BLUE;
+            break;
+        case 1:
+            textColor = COLOR_TRANSPARENT_GREEN;
+            break;
+        case 2:
+            textColor = COLOR_RED;
+            break;
+        case 3:
+            textColor = COLOR_YELLOW;
+            break;
+    }
+    gfx_SetTextFGColor(textColor);
+    gfx_PrintChar(number);
+    curPassword[curPasswordIndex] = number;
+    setCurPasswordIndex(curPasswordIndex + 1);
+    gfx_SetColor(COLOR_WHITE);
+    gfx_Rectangle(10 + (20 * curPasswordIndex) - 2, 18, 11, 20);
+}
+
+void computerCutsceneInputHandler(sk_key_t key) {
+    // this feels hopelessly inefficient but there doesn't seem to be an easier way to convert num keys to actual nums
+    if(key == sk_Enter) computerCutscene();
+    if(computerCutsceneState == 1) {
+        switch (key)
+        {
+        case sk_0:
+            typeNumber('0');
+            break;
+        case sk_1:
+            typeNumber('1');
+            break;
+        case sk_2:
+            typeNumber('2');
+            break;
+        case sk_3:
+            typeNumber('3');
+            break;
+        case sk_4:
+            typeNumber('4');
+            break;
+        case sk_5:
+            typeNumber('5');
+            break;
+        case sk_6:
+            typeNumber('6');
+            break;
+        case sk_7:
+            typeNumber('7');
+            break;
+        case sk_8:
+            typeNumber('8');
+            break;
+        case sk_9:
+            typeNumber('9');
+            break;
+        case sk_Left:
+            gfx_SetColor(COLOR_BLACK);
+            gfx_Rectangle(10 + (20 * curPasswordIndex) - 2, 18, 11, 20);
+            setCurPasswordIndex(curPasswordIndex - 1);
+            gfx_SetColor(COLOR_WHITE);
+            gfx_Rectangle(10 + (20 * curPasswordIndex) - 2, 18, 11, 20);
+            break;
+        case sk_Right:
+            gfx_SetColor(COLOR_BLACK);
+            gfx_Rectangle(10 + (20 * curPasswordIndex) - 2, 18, 11, 20);
+            setCurPasswordIndex(curPasswordIndex + 1);
+            gfx_SetColor(COLOR_WHITE);
+            gfx_Rectangle(10 + (20 * curPasswordIndex) - 2, 18, 11, 20);
+            break;
+        }
+    }
+    
+}
+
+void computerCutscene() {
     const char* string;
+    bool blankFlag = false;
     switch(computerCutsceneState) {
-        case 2: {
+        case 0:
+            curPasswordIndex = 0;
+            for(int i = 0; i < 4; i++) {
+                curPassword[i] = '0';
+            }
+            setRenderNiko(false);
+            gfx_FillScreen(COLOR_BLACK);
+            gfx_SetTextFGColor(COLOR_WHITE);
+            gfx_PrintStringXY("Input Password:", 0, 0);
+            for(int i = 0; i < 4; i++) {
+                typeNumber('0');
+            }
+            
+            //gfx_Rectangle(0, 0, 16, 16);
+            setInputHandler(computerCutsceneInputHandler);
+            computerCutsceneState++;
+            break;
+        case 1:
+            gfx_SetColor(COLOR_BLACK);
+            gfx_FillRectangle(0, 0, GFX_LCD_WIDTH, GFX_LCD_HEIGHT);
+            if(curPassword[0] == '6' && curPassword[1] == '4' && curPassword[2] == '8' && curPassword[3] == '2') {
+                gfx_SetTextFGColor(COLOR_TRANSPARENT_GREEN);
+                gfx_PrintStringXY("Access Granted.", 0, 0);
+                computerCutsceneState = 3;
+            } else {
+                gfx_SetTextFGColor(COLOR_RED);
+                gfx_PrintStringXY("Access Denied.", 0, 0);
+                computerCutsceneState = 2;
+            }
+            break;
+        case 2:
+            room_start_renderRoom();
+            setRenderNiko(true);
+            setInputHandler(defaultInputHandler);
+            computerCutsceneState = 0;
+            break;
+        case 3:
+            gfx_FillScreen(COLOR_LIGHT_BLUE);
+            gfx_SetColor(COLOR_WHITE);
+            gfx_SetTextFGColor(COLOR_BLACK);
+            gfx_SetTextBGColor(COLOR_WHITE);
+            computerCutsceneState++;
+            blankFlag = true;
+            break;
+        case 4: 
             string = "...";
             break;
-        }
-        case 3: {
+        case 5: 
             string = "You found me.";
             break;
-        }
-        case 4: {
-            string = "Wait.";
+        case 6: 
+            string = "...Why?";
             break;
-        }
-        case 5: {
-            string = "Am i on a calculator?? what???";
+        case 7:
+            string = "You're already too late.";
             break;
-        }
-        case 6: {
-            string = "oh... this is a tech demo isn't it?";
+        case 8:
+            string = "Not much of the world remains.";
             break;
-        }
-        case 7: {
-            string = "well i guess i'll say the line, just for you.";
+        case 9:
+            string = "This will be apparent once you go outside.";
             break;
-        }
-        case 8: {
+        case 10:
+            string = "This place was never worth saving.";
+            break;
+        case 11:
+            string = "...Do you still want to try?";
+            break;
+        case 12:
+            string = "Then, remember this:";
+            break;
+        case 13:
+            string = "Your actions here will affect Niko.";
+            break;
+        case 14:
+            string = "Your \"mission\" is to help Niko leave.";
+            break;
+        case 15:
+            string = "And most importantly...";
+            break;
+        case 16:
             gfx_End();
-            gfxActive = false;
+            setGfxActive(false);
             os_DrawStatusBar();
             os_SetCursorPos(4, 2);
             os_PutStrFull("You only have one shot.");
+            computerCutsceneState++;
             break;
-        }
-        case 9: {
+        case 17:
             initGfx();
-            gfxActive = true;
-            gfx_FillScreen(COLOR_LIGHT_BLUE);
-            string = "that good enough for you??";
-            gfx_SetTextFGColor(COLOR_BLACK);
+            setGfxActive(true);
+            room_start_renderRoom();
+            setRenderNiko(true);
+            computerCutsceneState++;
+            const char* endDialogue[3] = {"", "[Niko hears the sound of a door unlocking.]", ""};
+            warp_t kitchenWarp = {{226, 196, 32, 32}, &room_livingroom_loadRoom, 55, 46};
+            warp_t* warps = getWarps();
+            warps[1] = kitchenWarp;
+            setWarps(warps);
+            showDialogue(endDialogue, DIALOGUE_TYPE_IMPERSONAL);
             break;
-        }
-        case 10: {
-            string = "god i hate gamers...";
-            break;
-        }
-        case 11: {
-            gfx_End();
-            gfxActive = false;
-            os_DrawStatusBar();
-            os_SetCursorPos(1, 2);
-            os_PutStrFull("HAPPY 5TH ANNIVERSARY,");
-            os_SetCursorPos(2, 9);
-            os_PutStrFull("ONESHOT!");
-            os_SetCursorPos(5, 1);
-            os_PutStrFull("A scuffed demo by glotch");
-            os_SetCursorPos(7, 6);
-            os_PutStrFull("@glotchalotch");
-            break;
-        }
     }
-    if(computerCutsceneState >= 2 && computerCutsceneState != 8 && computerCutsceneState < 11) {
+    if(computerCutsceneState >= 4 && computerCutsceneState < 16 && !blankFlag) {
         gfx_FillRectangle(GFX_LCD_WIDTH/2 - 140, GFX_LCD_HEIGHT/2 - 60, 280, 120);
         gfx_PrintStringXY(string, GFX_LCD_WIDTH/2 - (gfx_GetStringWidth(string)/2), GFX_LCD_HEIGHT/2 - 5);
+        computerCutsceneState++;
     }
-    computerCutsceneState++;*/
 }

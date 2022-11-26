@@ -17,6 +17,13 @@ bounding_box_t* getBoundingBoxes() {
     return boundingBoxes;
 }
 
+void makeEmptyBoundingBoxArray(bounding_box_t* array) {
+    for(int i = 0; i < BBOX_ARR_SIZE; i++) {
+        bounding_box_t bbox = {0, 0, 0, 0};
+        array[i] = bbox;
+    }
+}
+
 void setInteractables(interactable_t interactableList[INTERACTABLE_ARR_SIZE]) {
     for(int i = 0; i < INTERACTABLE_ARR_SIZE; i++) {
         interactables[i] = interactableList[i];
@@ -27,9 +34,29 @@ interactable_t* getInteractables() {
     return interactables;
 }
 
+void makeEmptyInteractableArray(interactable_t* array) {
+    for(int i = 0; i < INTERACTABLE_ARR_SIZE; i++) {
+        bounding_box_t bbox = {0, 0, 0, 0};
+        interactable_t inter = {bbox, NULL, NULL};
+        array[i] = inter;
+    }
+}
+
 void removeInteractable(uint8_t index) {
     interactable_t i = {{0, 0, 0, 0}, NULL, NULL};
     interactables[index] = i;
+}
+
+warp_t* getWarps() {
+    return warps;
+}
+
+void makeEmptyWarpArray(warp_t* array) {
+    for(int i = 0; i < WARP_ARR_SIZE; i++) {
+        bounding_box_t bbox = {0, 0, 0, 0};
+        warp_t inter = {bbox, NULL, 0, 0};
+        array[i] = inter;
+    }
 }
 
 void setWarps(warp_t warpList[WARP_ARR_SIZE]) {

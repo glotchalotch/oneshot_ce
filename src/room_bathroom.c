@@ -66,6 +66,7 @@ void room_bathroom_renderRoom() {
 
 void room_bathroom_loadRoom() {
     bounding_box_t boxes[BBOX_ARR_SIZE];
+    makeEmptyBoundingBoxArray(boxes);
 
     bounding_box_t backWallBox = {40, 0, 200, 120};
     boxes[0] = backWallBox;
@@ -94,25 +95,17 @@ void room_bathroom_loadRoom() {
     bounding_box_t sinkBox = {122, 118, 44, 26};
     boxes[8] = sinkBox;
 
-    bounding_box_t nullBox = {0, 0, 0, 0};
-    boxes[9] = nullBox;
-
 
     interactable_t interactables[INTERACTABLE_ARR_SIZE];
-    for(int i = 0; i < INTERACTABLE_ARR_SIZE; i++) {
-        bounding_box_t bbox = {0, 0, 0, 0};
-        interactable_t inter = {bbox, NULL, NULL};
-        interactables[i] = inter;
-    }
+    makeEmptyInteractableArray(interactables);
+
     interactable_t plantInteractable = {plantBox, &plantCutscene, NULL};
     interactables[0] = plantInteractable;
 
     warp_t warps[WARP_ARR_SIZE];
-    for(int i = 0; i < WARP_ARR_SIZE; i++) {
-        warp_t w = {{0, 0, 0, 0}, NULL, 0, 0};
-        warps[i] = w;
-    }
-    warp_t warp = {{260, 198, 22, 40}, &room_start_loadRoom, 2, 136};
+    makeEmptyWarpArray(warps);
+
+    warp_t warp = {{260, 198, 22, 40}, &room_start_loadRoom, 14, 136};
     warps[0] = warp;
 
     setBoundingBoxes(boxes);
