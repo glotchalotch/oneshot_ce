@@ -6,6 +6,8 @@ bounding_box_t boundingBoxes[BBOX_ARR_SIZE];
 interactable_t interactables[INTERACTABLE_ARR_SIZE];
 warp_t warps[WARP_ARR_SIZE];
 
+void (*unloadRoomFunction)() = NULL;
+
 //TODO: it would probably wise to convert bboxes and interactables to pointers
 void setBoundingBoxes(bounding_box_t boxes[BBOX_ARR_SIZE]) {
     for(int i = 0; i < BBOX_ARR_SIZE; i++) {
@@ -133,9 +135,17 @@ void checkAndWarp(int* curX, int* curY, uint8_t spriteWidth, uint8_t spriteHeigh
                 *curX = warps[i].destX;
                 *curY = warps[i].destY;
                 justWarped = true;
+                if(unloadRoomFunction != NULL) {
+                    unloadRoomFunction();
+                    unloadRoomFunction = NULL;
+                }
                 warps[i].roomLoadFunction();
             }
         }
     }
     if(foundWarp == NULL) justWarped = false;
+}
+
+void setUnloadRoomFunction(void (*unloadFunction)()) {
+    unloadRoomFunction = unloadFunction;
 }

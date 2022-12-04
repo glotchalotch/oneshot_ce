@@ -8,13 +8,16 @@
 #include "main.h"
 
 #define INVENTORY_LENGTH 10
+#define INVENTORY_COMBO_TABLE_SIZE 3
+#define INVENTORY_CURSOR_NONESELECTED -1
+#define INVENTORY_ADD_FAILED 255
 #define INVENTORY_WIDTH GFX_LCD_WIDTH
 #define INVENTORY_HEIGHT GFX_LCD_HEIGHT / 2
 
 item_t* inventory[INVENTORY_LENGTH];
 gfx_sprite_t* cursor;
 
-item_t* currentItem = NULL;
+int8_t selectedCursorPos = INVENTORY_CURSOR_NONESELECTED;
 uint8_t cursorPos = 0;
 
 bool inventoryRendering = false;
@@ -25,20 +28,23 @@ item_t nullItem = {
     ""
 };
 
-void inventory_addItem(item_t* item) {
-    for(int i = 0; i < INVENTORY_LENGTH; i++) {
+uint8_t inventory_addItem(item_t* item) {
+    // returns index in array of added item
+    for(uint8_t i = 0; i < INVENTORY_LENGTH; i++) {
         if(inventory[i]->id == ITEM_NONE) {
             inventory[i] = item;
-            break;
+            if(selectedCursorPos > i) selectedCursorPos++;
+            return i;
         }
     }
+    return INVENTORY_ADD_FAILED;
 }
 
-void inventory_removeItem(item_t* item) {
+void inventory_removeItem(uint8_t index) {
     bool itemRemoved = false;
-    for(int i = 0; i < INVENTORY_LENGTH; i++) {
+    for(uint8_t i = 0; i < INVENTORY_LENGTH; i++) {
         if(!itemRemoved) {
-            if(inventory[i] == item) {
+            if(i == index) {
                 free(inventory[i]);
                 inventory[i] = &nullItem;
                 itemRemoved = true;
@@ -46,6 +52,11 @@ void inventory_removeItem(item_t* item) {
         } else {
             inventory[i - 1] = inventory[i];
             inventory[i] = &nullItem;
+            if(selectedCursorPos == i) {
+                selectedCursorPos = INVENTORY_CURSOR_NONESELECTED;
+            } else if(selectedCursorPos > i) {
+                selectedCursorPos--;
+            }
         }
     }
 }
@@ -91,7 +102,7 @@ void inventory_renderInventory() {
     gfx_FillRectangle(0, 0, INVENTORY_WIDTH, INVENTORY_HEIGHT);
     for (int i = 0; i < INVENTORY_LENGTH; i++)
     {
-        if(currentItem == inventory[i]) {
+        if(selectedCursorPos == i) {
             gfx_SetTextFGColor(COLOR_LIGHT_BLUE);
         } else gfx_SetTextFGColor(COLOR_WHITE);
         gfx_PrintStringXY(inventory[i]->name, ((i % 2) * (INVENTORY_WIDTH / 2)) + 15, ((i - (i % 2)) * 10) + 10);
@@ -99,10 +110,64 @@ void inventory_renderInventory() {
     inventory_moveCursor(INVENTORY_CURSORDIR_NONE);
 }
 
+typedef struct item_combination_table {
+    uint8_t combineItemId;
+    item_t* resultItem;
+    void* cutscenePointer;
+} item_combination_table_t;
+
+item_combination_table_t* inventory_getItemCombinationTable(uint8_t item) {
+    static item_combination_table_t tables[INVENTORY_COMBO_TABLE_SIZE];
+    for(int i = 0; i < INVENTORY_COMBO_TABLE_SIZE; i++) {
+        tables[i].combineItemId = ITEM_NONE;
+        tables[i].resultItem = &nullItem;
+        tables[i].cutscenePointer = NULL;
+    }
+    switch(item) {
+        case ITEM_HOUSE_BRANCH: {
+            tables[0].combineItemId = ITEM_HOUSE_ALCOHOL;
+            static item_t wetBranch = {ITEM_HOUSE_WETBRANCH, "wet branch"};
+            tables[0].resultItem = &wetBranch;
+            tables[0].cutscenePointer = NULL; // todo
+            break;
+        }
+    }
+    return tables;
+}
+
+void inventory_combineItems(uint8_t index1, uint8_t index2) {
+    uint8_t a = inventory[index1]->id;
+    uint8_t b = inventory[index2]->id;
+    if(b < a) {
+        // lower number always needs to come first such that i only have to write combinations once
+        uint8_t temp = a;
+        a = b;
+        b = temp;
+    }
+    item_combination_table_t* comboTable = inventory_getItemCombinationTable(a);
+    for(int i = 0; i < INVENTORY_COMBO_TABLE_SIZE; i++) {
+        if(comboTable[i].combineItemId == b) {
+            if(index2 > index1) index2--; //pre-emptively preparing for indices shifting when removing index1
+            inventory_removeItem(index1);
+            inventory_removeItem(index2);
+            uint8_t addedIndex = inventory_addItem(comboTable[i].resultItem);
+            if(addedIndex != INVENTORY_ADD_FAILED) {
+                selectedCursorPos = addedIndex;
+                cursorPos = addedIndex;
+            }
+        }
+    }
+}
+
 void inventory_selectHighlightedItem() {
-    if(currentItem != inventory[cursorPos] && inventory[cursorPos] != &nullItem) {
-        currentItem = inventory[cursorPos];
-    } else currentItem = NULL;
+    if(selectedCursorPos != cursorPos && inventory[cursorPos] != &nullItem) {
+        if(selectedCursorPos == INVENTORY_CURSOR_NONESELECTED) selectedCursorPos = cursorPos;
+        else {
+            inventory_combineItems(selectedCursorPos, cursorPos);
+        }
+    } else {
+        selectedCursorPos = INVENTORY_CURSOR_NONESELECTED;
+    }
 }
 
 void inventory_toggle() {
@@ -133,7 +198,9 @@ void inventory_toggle() {
 }
 
 item_t* inventory_getCurrentItem() {
-    return currentItem;
+    if(selectedCursorPos != INVENTORY_CURSOR_NONESELECTED) {
+        return inventory[selectedCursorPos];
+    } else return NULL;
 }
 
 bool inventory_isInventoryRendering() {

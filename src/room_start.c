@@ -24,6 +24,10 @@ gfx_sprite_t* behind_remote;
 
 void computerCutscene(); // c is so silly i love having to declare functions in order!
 
+void room_start_unloadRoom() {
+    if(remoteCutsceneState < 2) free(behind_remote);
+}
+
 void windowCutscene() {
     static uint8_t windowCutsceneState = 0;
     if(inventory_getCurrentItem()->id == ITEM_HOUSE_REMOTE) {
@@ -92,7 +96,7 @@ void room_start_renderRoom() {
     unzipScaleDrawSprite(room_house_start_bg3_compressed, room_house_start_bg3_width, room_house_start_bg3_height, 2, 160, 0);
     unzipScaleDrawSprite(room_house_start_bg4_compressed, room_house_start_bg4_width, room_house_start_bg4_height, 2, 240, 0);
 
-    if(remoteCutsceneState < 1) {
+    if(remoteCutsceneState < 2) {
         gfx_sprite_t *remote = gfx_MallocSprite(remote_width, remote_height);
         behind_remote = gfx_MallocSprite(remote_width, remote_height);
         gfx_GetSprite(behind_remote, 262, 150);
@@ -162,6 +166,8 @@ void room_start_loadRoom() {
     setWarps(warps);
     setBoundingBoxes(boundingBoxes);
     setInteractables(interactables);
+
+    setUnloadRoomFunction(&room_start_unloadRoom);
 }
 
 void setCurPasswordIndex(uint8_t index) {
@@ -356,6 +362,7 @@ void computerCutscene() {
             warp_t* warps = getWarps();
             warps[1] = kitchenWarp;
             setWarps(warps);
+            setOnDialogueHide(NULL); // i thought this was implicit but after rewriting inventory logic, not having this line caused some kind of game-crashing item dupe if items were in the inventory during this part. okay!!!
             showDialogue(endDialogue, DIALOGUE_TYPE_IMPERSONAL);
             break;
     }
