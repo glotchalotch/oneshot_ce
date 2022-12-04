@@ -165,8 +165,6 @@ int main() {
         if(gfxActive) gfx_BlitBuffer();        
     };
 
-    inventory_clean();
-
     free(niko_down_scaled);
     free(niko_up_scaled);
     free(niko_right_scaled);

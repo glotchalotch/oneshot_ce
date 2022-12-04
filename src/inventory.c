@@ -10,7 +10,6 @@
 #define INVENTORY_LENGTH 10
 #define INVENTORY_COMBO_TABLE_SIZE 3
 #define INVENTORY_CURSOR_NONESELECTED -1
-#define INVENTORY_ADD_FAILED 255
 #define INVENTORY_WIDTH GFX_LCD_WIDTH
 #define INVENTORY_HEIGHT GFX_LCD_HEIGHT / 2
 
@@ -22,8 +21,7 @@ uint8_t cursorPos = 0;
 
 bool inventoryRendering = false;
 
-//reminder: don't try to free this null item
-item_t nullItem = {
+static item_t nullItem = {
     ITEM_NONE,
     ""
 };
@@ -41,35 +39,21 @@ uint8_t inventory_addItem(item_t* item) {
 }
 
 void inventory_removeItem(uint8_t index) {
-    bool itemRemoved = false;
-    for(uint8_t i = 0; i < INVENTORY_LENGTH; i++) {
-        if(!itemRemoved) {
-            if(i == index) {
-                free(inventory[i]);
-                inventory[i] = &nullItem;
-                itemRemoved = true;
-            }
-        } else {
-            inventory[i - 1] = inventory[i];
-            inventory[i] = &nullItem;
-            if(selectedCursorPos == i) {
-                selectedCursorPos = INVENTORY_CURSOR_NONESELECTED;
-            } else if(selectedCursorPos > i) {
-                selectedCursorPos--;
-            }
+    inventory[index] = &nullItem;
+    if(selectedCursorPos == index) selectedCursorPos = INVENTORY_CURSOR_NONESELECTED;
+    for(uint8_t i = index + 1; i < INVENTORY_LENGTH; i++) {
+        inventory[i - 1] = inventory[i];
+        inventory[i] = &nullItem;
+        if(selectedCursorPos >= i) {
+            selectedCursorPos--;
         }
     }
+    selectedCursorPos = INVENTORY_CURSOR_NONESELECTED;
 }
 
 void inventory_init() {
     for(int i = 0; i < INVENTORY_LENGTH; i++) {
         inventory[i] = &nullItem;
-    }
-}
-
-void inventory_clean() {
-    for(int i = 0; i < INVENTORY_LENGTH; i++) {
-        if(inventory[i] != &nullItem) free(inventory[i]);
     }
 }
 
@@ -159,6 +143,10 @@ void inventory_combineItems(uint8_t index1, uint8_t index2) {
     }
 }
 
+void inventory_selectItem(uint8_t index) {
+    selectedCursorPos = index;
+}
+
 void inventory_selectHighlightedItem() {
     if(selectedCursorPos != cursorPos && inventory[cursorPos] != &nullItem) {
         if(selectedCursorPos == INVENTORY_CURSOR_NONESELECTED) selectedCursorPos = cursorPos;
@@ -201,6 +189,15 @@ item_t* inventory_getCurrentItem() {
     if(selectedCursorPos != INVENTORY_CURSOR_NONESELECTED) {
         return inventory[selectedCursorPos];
     } else return NULL;
+}
+
+uint8_t inventory_getItemIndex(item_t* item) {
+    for(uint8_t i = 0; i < INVENTORY_LENGTH; i++) {
+        if(inventory[i] == item) {
+            return i;
+        }
+    }
+    return INVENTORY_ITEM_NOT_FOUND;
 }
 
 bool inventory_isInventoryRendering() {

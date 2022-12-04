@@ -16,6 +16,9 @@
 #define INVENTORY_CURSORDIR_LEFT 3
 #define INVENTORY_CURSORDIR_RIGHT 4
 
+#define INVENTORY_ADD_FAILED 255
+#define INVENTORY_ITEM_NOT_FOUND 255
+
 typedef struct item {
     uint8_t id;
     const char* name;
@@ -27,12 +30,13 @@ typedef struct item {
 
 void inventory_init();
 void inventory_toggle();
-void inventory_clean();
 void inventory_moveCursor(uint8_t dir);
 void inventory_renderInventory();
+void inventory_selectItem(uint8_t index);
 void inventory_selectHighlightedItem();
 uint8_t inventory_addItem(item_t* item);
 void inventory_removeItem(uint8_t index);
+uint8_t inventory_getItemIndex(item_t* item);
 item_t* inventory_getCurrentItem();
 void inventory_inputHandler(sk_key_t key);
 bool inventory_isInventoryRendering();

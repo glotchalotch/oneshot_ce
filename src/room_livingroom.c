@@ -9,10 +9,41 @@
 #include "room_kitchen.h"
 
 void tvCutscene() {
-    const char* dialogue[3] = {"", "[The TV gives off a dangerous looking spark.]", ""};
-    colored_text_t yellowText = {1, 38, 5, COLOR_YELLOW};
-    setColoredText(0, &yellowText);
-    showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+    item_t* currentItem = inventory_getCurrentItem();
+    if(currentItem->id == ITEM_HOUSE_WETBRANCH) {
+        static uint8_t tvCutsceneState = 0;
+        switch(tvCutsceneState) {
+            case 0: {
+                const char* dialogue[3] = {"", "[Niko readies the branch...]", ""};
+                setOnDialogueHide(&tvCutscene);
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                tvCutsceneState++;
+                break;
+            }
+            case 1: {
+                const char* dialogue[3] = {"Ah!", "", ""};
+                showDialogue(dialogue, DIALOGUE_TYPE_PERSONAL);
+                tvCutsceneState++;
+                break;
+            }
+            case 2: {
+                const char* dialogue[3] = {"", "[The branch lights with a blue flame.]", ""};
+                setOnDialogueHide(NULL);
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                inventory_removeItem(inventory_getItemIndex(currentItem));
+                static item_t litBranch = {ITEM_HOUSE_LITBRANCH, "lit branch"};
+                uint8_t litBranchIndex = inventory_addItem(&litBranch);
+                inventory_selectItem(litBranchIndex);
+                tvCutsceneState++;
+                break;
+            }
+        }
+    } else {
+        const char* dialogue[3] = {"", "[The TV gives off a dangerous looking spark.]", ""};
+        colored_text_t yellowText = {1, 38, 5, COLOR_YELLOW};
+        setColoredText(0, &yellowText);
+        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+    }
 }
 
 void fireplaceCutscene() {
