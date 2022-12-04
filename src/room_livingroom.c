@@ -6,6 +6,7 @@
 #include "color.h"
 #include "inventory.h"
 #include "room_start.h"
+#include "room_kitchen.h"
 
 void tvCutscene() {
     const char* dialogue[3] = {"", "[The TV gives off a dangerous looking spark.]", ""};
@@ -91,6 +92,9 @@ void room_livingroom_loadRoom() {
 
     warp_t bedroomWarp = {{61, 95, 30, 15}, &room_start_loadRoom, 222, 150};
     warps[0] = bedroomWarp;
+
+    warp_t kitchenWarp = {{183, 220, 90, 20}, &room_kitchen_loadRoom, 38, 76};
+    warps[1] = kitchenWarp;
 
     setBoundingBoxes(boundingBoxes);
     setInteractables(interactables);

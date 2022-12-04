@@ -28,6 +28,10 @@ extern "C" {
 #include "room_house_livingroom_bg2.h"
 #include "room_house_livingroom_bg3.h"
 #include "room_house_livingroom_bg4.h"
+#include "room_house_kitchen_bg1.h"
+#include "room_house_kitchen_bg2.h"
+#include "room_house_kitchen_bg3.h"
+#include "room_house_kitchen_bg4.h"
 
 #ifdef __cplusplus
 }

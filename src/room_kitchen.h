@@ -1,0 +1,1 @@
+void room_kitchen_loadRoom();

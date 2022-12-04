@@ -36,6 +36,10 @@ converts:
       - room_house_livingroom_bg2.png
       - room_house_livingroom_bg3.png
       - room_house_livingroom_bg4.png
+      - room_house_kitchen_bg1.png
+      - room_house_kitchen_bg2.png
+      - room_house_kitchen_bg3.png
+      - room_house_kitchen_bg4.png
     compress: zx7
 
 outputs:
