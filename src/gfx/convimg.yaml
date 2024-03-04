@@ -1,13 +1,13 @@
 palettes:
   - name: global_palette
     fixed-entries:
-      - color: {index: 0, r: 0, g: 255, b: 33} # transparent placeholder
-      - color: {index: 1, r: 0, g: 0, b: 0} # black
-      - color: {index: 2, r: 255, g: 255, b: 255} # white
-      - color: {index: 3, r: 66, g: 160, b: 255} # light blue for computer cutscene
-      - color: {index: 4, r: 255, g: 216, b: 0} # yellow
-      - color: {index: 5, r: 255, g: 0, b: 0} # red
-      - color: {index: 6, r: 140, g: 140, b: 140} # gray
+      - color: { index: 0, r: 0, g: 255, b: 33 } # transparent placeholder
+      - color: { index: 1, r: 0, g: 0, b: 0 } # black
+      - color: { index: 2, r: 255, g: 255, b: 255 } # white
+      - color: { index: 3, r: 66, g: 160, b: 255 } # light blue for computer cutscene
+      - color: { index: 4, r: 255, g: 216, b: 0 } # yellow
+      - color: { index: 5, r: 255, g: 0, b: 0 } # red
+      - color: { index: 6, r: 140, g: 140, b: 140 } # gray
     images: automatic
 
 converts:
@@ -40,6 +40,8 @@ converts:
       - room_house_kitchen_bg2.png
       - room_house_kitchen_bg3.png
       - room_house_kitchen_bg4.png
+      - fire.png
+      - key_glint.png
     compress: zx7
 
 outputs:

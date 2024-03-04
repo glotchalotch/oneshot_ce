@@ -1,4 +1,5 @@
 #include <tice.h>
+#include <graphx.h>
 #include "gfx/gfx.h"
 #include "collision.h"
 #include "main.h"
@@ -8,59 +9,109 @@
 #include "room_start.h"
 #include "room_kitchen.h"
 
-void tvCutscene() {
-    item_t* currentItem = inventory_getCurrentItem();
-    if(currentItem->id == ITEM_HOUSE_WETBRANCH) {
+void tvCutscene()
+{
+    item_t *currentItem = inventory_getCurrentItem();
+    if (currentItem->id == ITEM_HOUSE_WETBRANCH)
+    {
         static uint8_t tvCutsceneState = 0;
-        switch(tvCutsceneState) {
-            case 0: {
-                const char* dialogue[3] = {"", "[Niko readies the branch...]", ""};
-                setOnDialogueHide(&tvCutscene);
-                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
-                tvCutsceneState++;
-                break;
-            }
-            case 1: {
-                const char* dialogue[3] = {"Ah!", "", ""};
-                showDialogue(dialogue, DIALOGUE_TYPE_PERSONAL);
-                tvCutsceneState++;
-                break;
-            }
-            case 2: {
-                const char* dialogue[3] = {"", "[The branch lights with a blue flame.]", ""};
-                setOnDialogueHide(NULL);
-                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
-                inventory_removeItem(inventory_getItemIndex(currentItem));
-                static item_t litBranch = {ITEM_HOUSE_LITBRANCH, "lit branch"};
-                uint8_t litBranchIndex = inventory_addItem(&litBranch);
-                inventory_selectItem(litBranchIndex);
-                tvCutsceneState++;
-                break;
-            }
+        switch (tvCutsceneState)
+        {
+        case 0:
+        {
+            const char *dialogue[3] = {"", "[Niko readies the branch...]", ""};
+            setOnDialogueHide(&tvCutscene);
+            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+            tvCutsceneState++;
+            break;
         }
-    } else {
-        const char* dialogue[3] = {"", "[The TV gives off a dangerous looking spark.]", ""};
+        case 1:
+        {
+            const char *dialogue[3] = {"Ah!", "", ""};
+            showDialogue(dialogue, DIALOGUE_TYPE_PERSONAL);
+            tvCutsceneState++;
+            break;
+        }
+        case 2:
+        {
+            const char *dialogue[3] = {"", "[The branch lights with a blue flame.]", ""};
+            setOnDialogueHide(NULL);
+            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+            inventory_removeItem(inventory_getItemIndex(currentItem));
+            static item_t litBranch = {ITEM_HOUSE_LITBRANCH, "lit branch"};
+            uint8_t litBranchIndex = inventory_addItem(&litBranch);
+            inventory_selectItem(litBranchIndex);
+            tvCutsceneState++;
+            break;
+        }
+        }
+    }
+    else
+    {
+        const char *dialogue[3] = {"", "[The TV gives off a dangerous looking spark.]", ""};
         colored_text_t yellowText = {1, 38, 5, COLOR_YELLOW};
         setColoredText(0, &yellowText);
         showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
     }
 }
 
-void fireplaceCutscene() {
+void keyCutscene() {
+    static uint8_t keyCutsceneState = 0;
+    static gfx_sprite_t* behindGlint;
+    switch(keyCutsceneState) {
+        case 0: {
+            behindGlint = gfx_MallocSprite(key_glint_width, key_glint_height);
+            gfx_GetSprite(behindGlint, 178, 147);
+
+            unzipScaleDrawSprite(fire_compressed, fire_width, fire_height, 1, 230, 99);
+            unzipScaleDrawSprite(key_glint_compressed, key_glint_width, key_glint_height, 1, 178, 147);
+
+            bounding_box_t keyBox = {178, 147, key_glint_width, key_glint_height};
+            interactable_t keyInteractable = {keyBox, &keyCutscene, NULL};
+
+            interactable_t* interactables = getInteractables();
+            interactables[2] = keyInteractable;
+            setInteractables(interactables);
+
+            keyCutsceneState = 1;
+            break;
+        }
+        case 1: {
+            static item_t keyItem = {ITEM_HOUSE_BASEMENTKEY, "basement key"};
+            inventory_addItem(&keyItem);
+
+            gfx_Sprite(behindGlint, 178, 147);
+            keyCutsceneState++;
+            break;
+        }
+    }
+}
+
+void fireplaceCutscene()
+{
     static uint8_t fireplaceCutsceneState = 0;
-    if(inventory_getCurrentItem()->id == ITEM_HOUSE_LITBRANCH) {
-        // todo
-    } else {
-        switch(fireplaceCutsceneState) {
-            case 0: {
-                const char* dialogue[3] = {"", "[The wood in the fireplace looks like", "it was never used.]"};
+    if (inventory_getCurrentItem()->id == ITEM_HOUSE_LITBRANCH)
+    {
+        inventory_removeItem(inventory_getItemIndex(inventory_getCurrentItem()));
+
+        fireplaceCutsceneState = 2;
+        keyCutscene();
+    }
+    else
+    {
+        switch (fireplaceCutsceneState)
+        {
+            case 0:
+            {
+                const char *dialogue[3] = {"", "[The wood in the fireplace looks like", "it was never used.]"};
                 setOnDialogueHide(&fireplaceCutscene);
                 fireplaceCutsceneState++;
                 showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
                 break;
             }
-            case 1: {
-                const char* dialogue[3] = {"", "[Perhaps it could be lit.]", ""};
+            case 1:
+            {
+                const char *dialogue[3] = {"", "[Perhaps it could be lit.]", ""};
                 fireplaceCutsceneState = 0;
                 colored_text_t blueText = {1, 21, 3, COLOR_LIGHT_BLUE};
                 setColoredText(0, &blueText);
@@ -72,14 +123,16 @@ void fireplaceCutscene() {
     }
 }
 
-void room_livingroom_renderRoom() {
+void room_livingroom_renderRoom()
+{
     unzipScaleDrawSprite(room_house_livingroom_bg1_compressed, room_house_livingroom_bg1_width, room_house_livingroom_bg1_height, 2, 0, 0);
     unzipScaleDrawSprite(room_house_livingroom_bg2_compressed, room_house_livingroom_bg2_width, room_house_livingroom_bg2_height, 2, 80, 0);
     unzipScaleDrawSprite(room_house_livingroom_bg3_compressed, room_house_livingroom_bg3_width, room_house_livingroom_bg3_height, 2, 160, 0);
     unzipScaleDrawSprite(room_house_livingroom_bg4_compressed, room_house_livingroom_bg4_width, room_house_livingroom_bg4_height, 2, 240, 0);
 }
 
-void room_livingroom_loadRoom() {
+void room_livingroom_loadRoom()
+{
     room_livingroom_renderRoom();
 
     bounding_box_t boundingBoxes[BBOX_ARR_SIZE];

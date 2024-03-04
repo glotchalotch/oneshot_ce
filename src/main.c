@@ -15,7 +15,13 @@
 #define DIR_LEFT 2
 #define DIR_RIGHT 3
 
-enum direction {Down, Up, Left, Right};
+enum direction
+{
+    Down,
+    Up,
+    Left,
+    Right
+};
 bool renderNiko = true;
 bool gfxActive = true;
 bool endProgram = false;
@@ -35,7 +41,8 @@ gfx_sprite_t *niko_up_scaled;
 gfx_sprite_t *niko_left_scaled;
 gfx_sprite_t *niko_right_scaled;
 
-void initGfx() {
+void initGfx()
+{
     gfx_Begin();
     gfx_SetDrawBuffer();
     gfx_SetPalette(global_palette, sizeof_global_palette, 0);
@@ -44,84 +51,92 @@ void initGfx() {
     gfx_SetTextFGColor(COLOR_WHITE);
 }
 
-void unzipScaleDrawSprite(void* compressed_sprite, uint8_t compressedW, uint8_t compressedH, uint8_t scaleFactor, int x, int y) {
-    gfx_sprite_t* sprite = gfx_MallocSprite(compressedW * scaleFactor, compressedH * scaleFactor);
-    gfx_sprite_t* spriteUncompressed = gfx_MallocSprite(compressedW, compressedH);
+void unzipScaleDrawSprite(void *compressed_sprite, uint8_t compressedW, uint8_t compressedH, uint8_t scaleFactor, int x, int y)
+{
+    gfx_sprite_t *sprite = gfx_MallocSprite(compressedW * scaleFactor, compressedH * scaleFactor);
+    gfx_sprite_t *spriteUncompressed = gfx_MallocSprite(compressedW, compressedH);
     zx7_Decompress(spriteUncompressed, compressed_sprite);
     gfx_ScaleSprite(spriteUncompressed, sprite);
-    gfx_Sprite(sprite, x, y);
+    gfx_TransparentSprite(sprite, x, y);
     free(sprite);
     free(spriteUncompressed);
 }
 
-void setRenderNiko(bool render) {
+void setRenderNiko(bool render)
+{
     renderNiko = render;
 }
 
-void setGfxActive(bool active) {
+void setGfxActive(bool active)
+{
     gfxActive = active;
 }
 
-void markEndProgram() {
+void markEndProgram()
+{
     endProgram = true;
 }
 
-void defaultInputHandler(sk_key_t key) {
+void defaultInputHandler(sk_key_t key)
+{
     tryX = curX;
     tryY = curY;
-    switch(key) {
-        case sk_Up:
-            tryY -= moveSpeed;
-            curDir = DIR_UP;
-            curSprite = niko_up_scaled;
-            break;
-        case sk_Down:
-            tryY += moveSpeed;
-            curDir = DIR_DOWN;
-            curSprite = niko_down_scaled;
-            break;
-        case sk_Left:
-            tryX -= moveSpeed;
-            curDir = DIR_LEFT;
-            curSprite = niko_left_scaled;
-            break;
-        case sk_Right:
-            tryX += moveSpeed;
-            curDir = DIR_RIGHT;
-            curSprite = niko_right_scaled;
-            break;
-        case sk_Enter:
-            raycastInteractable(curDir, curX, curY, niko_down_scaled->width, niko_down_scaled->height);
-            break;
-        case sk_Add:
-            inventory_toggle();
-            break;
+    switch (key)
+    {
+    case sk_Up:
+        tryY -= moveSpeed;
+        curDir = DIR_UP;
+        curSprite = niko_up_scaled;
+        break;
+    case sk_Down:
+        tryY += moveSpeed;
+        curDir = DIR_DOWN;
+        curSprite = niko_down_scaled;
+        break;
+    case sk_Left:
+        tryX -= moveSpeed;
+        curDir = DIR_LEFT;
+        curSprite = niko_left_scaled;
+        break;
+    case sk_Right:
+        tryX += moveSpeed;
+        curDir = DIR_RIGHT;
+        curSprite = niko_right_scaled;
+        break;
+    case sk_Enter:
+        raycastInteractable(curDir, curX, curY, niko_down_scaled->width, niko_down_scaled->height);
+        break;
+    case sk_Add:
+        inventory_toggle();
+        break;
     }
 }
 
-int main() {
-    initGfx();    
-        //dbg_SetBreakpoint(&inventory_toggle);
+int main()
+{
+    initGfx();
+    // dbg_SetBreakpoint(&inventory_toggle);
 
     niko_down_scaled = gfx_MallocSprite(40, 54);
     gfx_sprite_t *niko_down = gfx_MallocSprite(20, 27);
     zx7_Decompress(niko_down, niko_down_compressed);
     gfx_ScaleSprite(niko_down, niko_down_scaled);
-    niko_up_scaled = gfx_MallocSprite(40, 54); 
+    niko_up_scaled = gfx_MallocSprite(40, 54);
     gfx_sprite_t *niko_up = gfx_MallocSprite(20, 27);
     zx7_Decompress(niko_up, niko_up_compressed);
     gfx_ScaleSprite(niko_up, niko_up_scaled);
-    niko_left_scaled = gfx_MallocSprite(40, 56); 
+    niko_left_scaled = gfx_MallocSprite(40, 56);
     gfx_sprite_t *niko_left = gfx_MallocSprite(20, 28);
     zx7_Decompress(niko_left, niko_left_compressed);
     gfx_ScaleSprite(niko_left, niko_left_scaled);
-    niko_right_scaled = gfx_MallocSprite(40, 56); 
+    niko_right_scaled = gfx_MallocSprite(40, 56);
     gfx_sprite_t *niko_right = gfx_MallocSprite(20, 28);
     zx7_Decompress(niko_right, niko_right_compressed);
     gfx_ScaleSprite(niko_right, niko_right_scaled);
 
     colored_text_t nullColoredText = {0, 0, 0, 0};
-    for(int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++)
+    {
         setColoredText(i, &nullColoredText);
     }
 
@@ -142,12 +157,15 @@ int main() {
 
     setInputHandler(defaultInputHandler);
     sk_key_t key;
-    while((key = os_GetCSC()) != sk_Clear && !endProgram) {
-        if(renderNiko) gfx_Sprite(behind_niko, curX, curY);
+    while ((key = os_GetCSC()) != sk_Clear && !endProgram)
+    {
+        if (renderNiko)
+            gfx_Sprite(behind_niko, curX, curY);
         checkAndWarp(&curX, &curY, curSprite->width, curSprite->height);
         handleInput(key);
 
-        if(tryY != curY || tryX != curX) {
+        if (tryY != curY || tryX != curX)
+        {
             bool blocked = checkCollision(tryX, tryY, curSprite->width, curSprite->height);
             if (!blocked)
             {
@@ -156,13 +174,17 @@ int main() {
             }
         }
 
-        if(renderNiko) {
+        if (renderNiko)
+        {
             gfx_GetSprite(behind_niko, curX, curY);
             gfx_TransparentSprite(curSprite, curX, curY);
         }
-        if(inDialogue) drawDialogue();
-        if(inventory_isInventoryRendering()) inventory_renderInventory();
-        if(gfxActive) gfx_BlitBuffer();        
+        if (inDialogue)
+            drawDialogue();
+        if (inventory_isInventoryRendering())
+            inventory_renderInventory();
+        if (gfxActive)
+            gfx_BlitBuffer();
     };
 
     free(niko_down_scaled);

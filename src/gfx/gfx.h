@@ -32,6 +32,8 @@ extern "C" {
 #include "room_house_kitchen_bg2.h"
 #include "room_house_kitchen_bg3.h"
 #include "room_house_kitchen_bg4.h"
+#include "fire.h"
+#include "key_glint.h"
 
 #ifdef __cplusplus
 }
