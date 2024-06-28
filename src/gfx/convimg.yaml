@@ -8,6 +8,7 @@ palettes:
       - color: { index: 4, r: 255, g: 216, b: 0 } # yellow
       - color: { index: 5, r: 255, g: 0, b: 0 } # red
       - color: { index: 6, r: 140, g: 140, b: 140 } # gray
+      - color: { index: 7, r: 40, g: 34, b: 48} # outline
     images: automatic
 
 converts:
@@ -44,6 +45,18 @@ converts:
       - key_glint.png
     compress: zx7
 
+  - name: tilesets
+    palette: global_palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - tileset_house_bg.png
+        - tileset_house_fg.png
+        - tileset_house_outline.png
+    compress: zx7
+
 outputs:
   - type: c
     include-file: gfx.h
@@ -51,3 +64,4 @@ outputs:
       - global_palette
     converts:
       - sprites
+      - tilesets

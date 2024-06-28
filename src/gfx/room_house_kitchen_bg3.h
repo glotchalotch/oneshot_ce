@@ -8,8 +8,8 @@ extern "C" {
 #define room_house_kitchen_bg3_width 28
 #define room_house_kitchen_bg3_height 120
 #define room_house_kitchen_bg3_size 3362
-#define room_house_kitchen_bg3_compressed_size 699
-extern unsigned char room_house_kitchen_bg3_compressed[699];
+#define room_house_kitchen_bg3_compressed_size 680
+extern unsigned char room_house_kitchen_bg3_compressed[680];
 
 #ifdef __cplusplus
 }

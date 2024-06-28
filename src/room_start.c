@@ -13,6 +13,7 @@
 #include "room_bathroom.h"
 #include "input.h"
 #include "room_livingroom.h"
+#include "tile.h"
 
 uint8_t computerCutsceneState = 0;
 bool inComputerCutscene = false;
@@ -91,10 +92,50 @@ void room_start_renderRoom() {
     //rendering the bg all at once puts it on the verge of running out of ram
     //so i have to juggle mem a bit like this
     //probably for the best anyway
-    unzipScaleDrawSprite(room_house_start_bg1_compressed, room_house_start_bg1_width, room_house_start_bg1_height, 2, 0, 0);
+    /*unzipScaleDrawSprite(room_house_start_bg1_compressed, room_house_start_bg1_width, room_house_start_bg1_height, 2, 0, 0);
     unzipScaleDrawSprite(room_house_start_bg2_compressed, room_house_start_bg2_width, room_house_start_bg2_height, 2, 80, 0);
     unzipScaleDrawSprite(room_house_start_bg3_compressed, room_house_start_bg3_width, room_house_start_bg3_height, 2, 160, 0);
-    unzipScaleDrawSprite(room_house_start_bg4_compressed, room_house_start_bg4_width, room_house_start_bg4_height, 2, 240, 0);
+    unzipScaleDrawSprite(room_house_start_bg4_compressed, room_house_start_bg4_width, room_house_start_bg4_height, 2, 240, 0);*/
+
+    gfx_FillScreen(COLOR_BLACK);
+
+    uint8_t map[70] = {58, 58, 84, 85, 85, 85, 85, 85, 105, 106,
+        58, 58, 92, 93, 93, 93, 93, 93, 113, 114,
+        3, 4, 93, 93, 93, 93, 93, 93, 121, 122,
+        6, 7, 89, 90, 91, 89, 90, 91, 89, 90,
+        21, 22, 97, 98, 109, 110, 110, 110, 111, 98,
+        104, 112, 89, 90, 125, 126, 126, 126, 127, 90,
+        58, 58, 58, 58, 58, 58, 58, 96, 58, 58};
+
+    drawBgTilemap(map, 7, 10, 0, 2);
+
+    uint8_t map2[32] = {83, 83, 83, 83, 61, 62, 83, 83,
+        19, 20, 16, 17, 69, 70, 83, 83,
+        27, 28, 24, 25, 77, 78, 83, 83,
+        35, 36, 83, 83, 83, 83, 83, 83};
+
+    drawFgTilemap(map2, 4, 8, 30, 22);
+
+    uint8_t map3[80] = {4, 4, 0, 1, 1, 1, 1, 1, 1, 2,
+        4, 4, 3, 4, 4, 4, 4, 4, 4, 4,
+        0, 1, 4, 4, 4, 4, 4, 4, 4, 5,
+        3, 4, 4, 4, 4, 4, 4, 4, 4, 5,
+        3, 4, 4, 4, 4, 4, 4, 4, 4, 5,
+        3, 4, 4, 4, 4, 4, 4, 4, 4, 5,
+        1, 1, 1, 1, 1, 1, 2, 4, 0, 1,
+        4, 4, 4, 4, 4, 4, 4, 1, 4, 4};
+
+    drawOutlineTilemap(map3, 8, 10, 0, 2);
+
+    gfx_SetColor(COLOR_OUTLINE);
+    gfx_SetPixel(32, 34);
+    gfx_SetPixel(111, 114);
+    gfx_SetPixel(128, 114);
+    
+    expandQuadrant(3);
+    expandQuadrant(2);
+    expandQuadrant(1);
+    expandQuadrant(0);
 
     if(remoteCutsceneState < 2) {
         gfx_sprite_t *remote = gfx_MallocSprite(remote_width, remote_height);

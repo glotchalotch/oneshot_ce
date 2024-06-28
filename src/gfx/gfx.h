@@ -34,6 +34,10 @@ extern "C" {
 #include "room_house_kitchen_bg4.h"
 #include "fire.h"
 #include "key_glint.h"
+#define tilesets_palette_offset 0
+#include "tileset_house_bg.h"
+#include "tileset_house_fg.h"
+#include "tileset_house_outline.h"
 
 #ifdef __cplusplus
 }

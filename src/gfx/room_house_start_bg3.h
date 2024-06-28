@@ -8,8 +8,8 @@ extern "C" {
 #define room_house_start_bg3_width 40
 #define room_house_start_bg3_height 120
 #define room_house_start_bg3_size 4802
-#define room_house_start_bg3_compressed_size 842
-extern unsigned char room_house_start_bg3_compressed[842];
+#define room_house_start_bg3_compressed_size 838
+extern unsigned char room_house_start_bg3_compressed[838];
 
 #ifdef __cplusplus
 }

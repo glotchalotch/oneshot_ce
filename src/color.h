@@ -5,3 +5,4 @@
 #define COLOR_YELLOW 4
 #define COLOR_RED 5
 #define COLOR_GRAY 6
+#define COLOR_OUTLINE 7
