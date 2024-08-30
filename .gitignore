@@ -2,3 +2,6 @@ bin/
 obj/
 .vscode/
 convimg.out
+
+src/gfx/*.c
+src/gfx/*.h
