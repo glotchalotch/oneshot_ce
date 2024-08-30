@@ -196,7 +196,7 @@ void room_start_loadRoom() {
     makeEmptyWarpArray(warps);
 
     bounding_box_t bathroomWarpBox = {2, 164, 32, 32};
-    warp_t bathroomWarp = {bathroomWarpBox, &room_bathroom_loadRoom, 240, 176};
+    warp_t bathroomWarp = {bathroomWarpBox, &room_bathroom_loadRoom, 196, 152};
     warps[0] = bathroomWarp;
 
     if(computerCutsceneState == 18) {
