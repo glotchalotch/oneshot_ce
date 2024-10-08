@@ -8,6 +8,7 @@
 #include "inventory.h"
 #include "room_start.h"
 #include "room_kitchen.h"
+#include "tile.h"
 
 void tvCutscene()
 {
@@ -125,10 +126,57 @@ void fireplaceCutscene()
 
 void room_livingroom_renderRoom()
 {
-    unzipScaleDrawSprite(room_house_livingroom_bg1_compressed, room_house_livingroom_bg1_width, room_house_livingroom_bg1_height, 2, 0, 0);
+    gfx_SetColor(COLOR_BLACK);
+    gfx_FillRectangle(0, 0, GFX_LCD_WIDTH, GFX_LCD_HEIGHT);
+
+    uint8_t bgMap[70] = {
+        58, 85, 1, 85, 85, 85, 85, 85, 85, 58,
+        3, 93, 2, 93, 93, 93, 93, 93, 93, 4,
+        6, 97, 98, 99, 97, 98, 99, 97, 98, 6,
+        9, 81, 82, 109, 110, 110, 110, 111, 82, 10,
+        111, 89, 90, 117, 118, 118, 118, 119, 90, 104,
+        127, 97, 98, 125, 126, 126, 126, 127, 98, 58,
+        58, 58, 58, 58, 58, 58, 107, 108, 107, 58 
+    };
+
+    drawBgTilemap(bgMap, 7, 10, 0, 16);
+
+    uint8_t fgMap[40] = {
+        83, 83, 83, 83, 83, 9, 10, 11,
+        83, 83, 83, 33, 83, 12, 13, 14,
+        83, 83, 40, 41, 42, 0, 1, 2,
+        83, 83, 83, 83, 83, 83, 83, 83,
+        81, 82, 83, 83, 83, 83, 83, 83
+    };
+
+    drawFgTilemap(fgMap, 5, 8, 16, 16);
+
+    uint8_t outlineMap[80] = {
+        4, 7, 7, 7, 7, 7, 7, 7, 7, 4,
+        8, 4, 4, 4, 4, 4, 4, 4, 4, 6,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 0,
+        1, 1, 1, 1, 1, 2, 4, 4, 4, 3
+    };
+
+    drawOutlineTilemap(outlineMap, 8, 10, 0, 0);
+
+    gfx_SetColor(COLOR_OUTLINE);
+    gfx_SetPixel(15, 15);
+    gfx_SetPixel(144, 15);
+
+    expandQuadrant(3);
+    expandQuadrant(2);
+    expandQuadrant(1);
+    expandQuadrant(0);
+
+    /*unzipScaleDrawSprite(room_house_livingroom_bg1_compressed, room_house_livingroom_bg1_width, room_house_livingroom_bg1_height, 2, 0, 0);
     unzipScaleDrawSprite(room_house_livingroom_bg2_compressed, room_house_livingroom_bg2_width, room_house_livingroom_bg2_height, 2, 80, 0);
     unzipScaleDrawSprite(room_house_livingroom_bg3_compressed, room_house_livingroom_bg3_width, room_house_livingroom_bg3_height, 2, 160, 0);
-    unzipScaleDrawSprite(room_house_livingroom_bg4_compressed, room_house_livingroom_bg4_width, room_house_livingroom_bg4_height, 2, 240, 0);
+    unzipScaleDrawSprite(room_house_livingroom_bg4_compressed, room_house_livingroom_bg4_width, room_house_livingroom_bg4_height, 2, 240, 0);*/
 }
 
 void room_livingroom_loadRoom()

@@ -399,7 +399,7 @@ void computerCutscene() {
             setRenderNiko(true);
             computerCutsceneState++;
             const char* endDialogue[3] = {"", "[Niko hears the sound of a door unlocking.]", ""};
-            warp_t kitchenWarp = {{226, 196, 32, 32}, &room_livingroom_loadRoom, 55, 46};
+            warp_t kitchenWarp = {{226, 196, 32, 32}, &room_livingroom_loadRoom, 58, 46};
             warp_t* warps = getWarps();
             warps[1] = kitchenWarp;
             setWarps(warps);
