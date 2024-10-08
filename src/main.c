@@ -109,6 +109,21 @@ void defaultInputHandler(sk_key_t key)
     case sk_Add:
         inventory_toggle();
         break;
+    case sk_9: {
+        bounding_box_t* bboxes = getBoundingBoxes();
+        gfx_SetColor(COLOR_LIGHT_BLUE);
+        for(uint8_t i = 0; i < BBOX_ARR_SIZE; i++) {
+            gfx_Rectangle(bboxes[i].x, bboxes[i].y, bboxes[i].width, bboxes[i].height);
+        }
+
+        warp_t* warps = getWarps();
+        gfx_SetColor(COLOR_TRANSPARENT_GREEN);
+        for(uint8_t i = 0; i < WARP_ARR_SIZE; i++) {
+            gfx_Rectangle(warps[i].boundingBox.x, warps[i].boundingBox.y, warps[i].boundingBox.width, warps[i].boundingBox.height);
+        }
+        break;
+    }
+        
     }
 }
 
