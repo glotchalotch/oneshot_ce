@@ -192,22 +192,22 @@ void room_livingroom_loadRoom()
     bounding_box_t leftWallBox = {0, 68, 32, 93};
     boundingBoxes[1] = leftWallBox;
 
-    bounding_box_t bottomWallBox = {0, 220, 138, 20};
+    bounding_box_t bottomWallBox = {0, 224, 192, 16};
     boundingBoxes[2] = bottomWallBox;
 
-    bounding_box_t bottomRightCornerBox = {273, 185, 47, 55};
+    bounding_box_t bottomRightCornerBox = {288, 192, 32, 48};
     boundingBoxes[3] = bottomRightCornerBox;
 
-    bounding_box_t rightWallBox = {285, 63, 35, 91};
+    bounding_box_t rightWallBox = {288, 63, 32, 97};
     boundingBoxes[4] = rightWallBox;
 
-    bounding_box_t tvBox = {109, 97, 60, 28};
+    bounding_box_t tvBox = {112, 98, 62, 30};
     boundingBoxes[5] = tvBox;
 
-    bounding_box_t fireplaceBox = {202, 95, 82, 30};
+    bounding_box_t fireplaceBox = {200, 95, 81, 33};
     boundingBoxes[6] = fireplaceBox;
 
-    bounding_box_t holeBox = {33, 158, 51, 24};
+    bounding_box_t holeBox = {32, 160, 64, 32};
     boundingBoxes[7] = holeBox;
 
     interactable_t interactables[INTERACTABLE_ARR_SIZE];
@@ -222,10 +222,10 @@ void room_livingroom_loadRoom()
     warp_t warps[WARP_ARR_SIZE];
     makeEmptyWarpArray(warps);
 
-    warp_t bedroomWarp = {{61, 95, 30, 15}, &room_start_loadRoom, 222, 150};
+    warp_t bedroomWarp = {{64, 95, 30, 15}, &room_start_loadRoom, 222, 150};
     warps[0] = bedroomWarp;
 
-    warp_t kitchenWarp = {{183, 220, 90, 20}, &room_kitchen_loadRoom, 38, 76};
+    warp_t kitchenWarp = {{192, 224, 96, 16}, &room_kitchen_loadRoom, 38, 76};
     warps[1] = kitchenWarp;
 
     setBoundingBoxes(boundingBoxes);
