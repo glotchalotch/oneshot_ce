@@ -26,10 +26,6 @@ converts:
       - computer_on.png
       - cursor.png
       - remote.png
-      - room_house_kitchen_bg1.png
-      - room_house_kitchen_bg2.png
-      - room_house_kitchen_bg3.png
-      - room_house_kitchen_bg4.png
       - fire.png
       - key_glint.png
     compress: zx7

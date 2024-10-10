@@ -8,6 +8,7 @@
 #include "inventory.h"
 #include "room_kitchen.h"
 #include "room_livingroom.h"
+#include "tile.h"
 
 void fridgeCutscene() {
     static uint8_t fridgeCutsceneState = 0;
@@ -37,12 +38,36 @@ void fridgeCutscene() {
 }
 
 void room_kitchen_renderRoom() {
-    unzipScaleDrawSprite(room_house_kitchen_bg1_compressed, room_house_kitchen_bg1_width, room_house_kitchen_bg1_height, 2, 0, 0);
-    unzipScaleDrawSprite(room_house_kitchen_bg2_compressed, room_house_kitchen_bg2_width, room_house_kitchen_bg2_height, 2, 80, 0);
-    unzipScaleDrawSprite(room_house_kitchen_bg3_compressed, room_house_kitchen_bg3_width, room_house_kitchen_bg3_height, 2, 160, 0);
-    unzipScaleDrawSprite(room_house_kitchen_bg4_compressed, room_house_kitchen_bg4_width, room_house_kitchen_bg4_height, 2, 216, 0);
     gfx_SetColor(COLOR_BLACK);
-    gfx_FillRectangle(262, 0, GFX_LCD_WIDTH - 262, GFX_LCD_HEIGHT); // kitchen doesnt take up full width so filling the rest of the screen w/ black
+    gfx_FillRectangle(0, 0, GFX_LCD_WIDTH, GFX_LCD_HEIGHT);
+
+    uint8_t bgMap[63] = {
+        126, 126, 127, 98, 58, 58, 58, 58, 58,
+        58, 107, 108, 107, 93, 93, 93, 93, 93,
+        58, 108, 107, 108, 93, 93, 93, 93, 93,
+        58, 107, 108, 107, 108, 107, 108, 107, 108,
+        58, 108, 107, 108, 107, 108, 107, 108, 107,
+        58, 107, 108, 107, 108, 107, 108, 107, 108,
+        58, 108, 107, 108, 107, 108, 107, 108, 107
+        };
+
+    drawBgTilemap(bgMap, 7, 9, 0, 0);
+
+    uint8_t fgMap[48] = {
+        83, 83, 83, 83, 83, 83, 48, 49,
+        83, 83, 83, 83, 83, 83, 56, 57,
+        83, 83, 83, 83, 83, 83, 64, 65,
+        43, 44, 45, 83, 83, 83, 83, 83,
+        51, 52, 53, 83, 83, 59, 60, 83,
+        83, 83, 83, 83, 75, 67, 68, 76
+    };
+
+    drawFgTilemap(fgMap, 6, 8, 16, 16);
+
+    expandQuadrant(3);
+    expandQuadrant(2);
+    expandQuadrant(1);
+    expandQuadrant(0);
 }
 
 void room_kitchen_loadRoom() {
@@ -51,25 +76,25 @@ void room_kitchen_loadRoom() {
     bounding_box_t boxes[BBOX_ARR_SIZE];
     makeEmptyBoundingBoxArray(boxes);
 
-    bounding_box_t leftBox = {0, 28, 19, 212};
+    bounding_box_t leftBox = {0, 28, 32, 212};
     boxes[0] = leftBox;
 
-    bounding_box_t bottomBox = {19, 238, 241, 2};
+    bounding_box_t bottomBox = {32, 223, 256, 17};
     boxes[1] = bottomBox;
 
-    bounding_box_t rightBox = {259, 24, 36, 216};
+    bounding_box_t rightBox = {288, 32, 32, 208};
     boxes[2] = rightBox;
 
-    bounding_box_t topBox = {110, 0, 149, 116};
+    bounding_box_t topBox = {128, 0, 160, 98};
     boxes[3] = topBox;
 
-    bounding_box_t tableBox = {154, 200, 103, 37};
+    bounding_box_t tableBox = {176, 184, 95, 40};
     boxes[4] = tableBox;
 
-    bounding_box_t sinkBox = {18, 156, 91, 52};
+    bounding_box_t sinkBox = {32, 144, 96, 46};
     boxes[5] = sinkBox;
 
-    bounding_box_t fridgeBox = {215, 74, 39, 75};
+    bounding_box_t fridgeBox = {240, 50, 39, 75};
     boxes[6] = fridgeBox;
 
     interactable_t interactables[INTERACTABLE_ARR_SIZE];
@@ -81,7 +106,7 @@ void room_kitchen_loadRoom() {
     warp_t warps[WARP_ARR_SIZE];
     makeEmptyWarpArray(warps);
 
-    warp_t livingroomWarp = {{19, 28, 88, 60}, &room_livingroom_loadRoom, 199, 174};
+    warp_t livingroomWarp = {{32, 32, 96, 32}, &room_livingroom_loadRoom, 199, 174};
     warps[0] = livingroomWarp;
 
     setBoundingBoxes(boxes);
