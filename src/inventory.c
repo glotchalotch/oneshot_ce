@@ -161,14 +161,17 @@ void inventory_selectHighlightedItem() {
 void inventory_toggle() {
     static gfx_sprite_t* behind_inventory1;
     static gfx_sprite_t* behind_inventory2;
+    static gfx_sprite_t* behind_inventory3;
     if(!inventoryRendering) {
         //width cant be >255 because uint8, same as dialogue
         //also i had to make the split half and half because memory spills over if i don't now?
         //this definitely isnt indicative of any overarching structural weaknesses in my programming
-        behind_inventory1 = gfx_MallocSprite(INVENTORY_WIDTH / 2, INVENTORY_HEIGHT);
-        behind_inventory2 = gfx_MallocSprite(INVENTORY_WIDTH / 2, INVENTORY_HEIGHT);
+        behind_inventory1 = gfx_MallocSprite(INVENTORY_WIDTH / 3, INVENTORY_HEIGHT);
         gfx_GetSprite(behind_inventory1, 0, 0);
-        gfx_GetSprite(behind_inventory2, INVENTORY_WIDTH / 2, 0);
+        behind_inventory2 = gfx_MallocSprite((INVENTORY_WIDTH / 3) + 1, INVENTORY_HEIGHT);
+        gfx_GetSprite(behind_inventory2, INVENTORY_WIDTH / 3, 0);
+        behind_inventory3 = gfx_MallocSprite((INVENTORY_WIDTH / 3) + 1, INVENTORY_HEIGHT);
+        gfx_GetSprite(behind_inventory3, 2 * INVENTORY_WIDTH / 3, 0);
         cursor = gfx_MallocSprite(cursor_width, cursor_height);
         zx7_Decompress(cursor, cursor_compressed);
         inventory_renderInventory();
@@ -176,9 +179,11 @@ void inventory_toggle() {
         setInputHandler(inventory_inputHandler);
     } else {
         gfx_Sprite(behind_inventory1, 0, 0);
-        gfx_Sprite(behind_inventory2, INVENTORY_WIDTH / 2, 0);
+        gfx_Sprite(behind_inventory2, INVENTORY_WIDTH / 3, 0);
+        gfx_Sprite(behind_inventory3, 2 * INVENTORY_WIDTH / 3, 0);
         free(behind_inventory1);
         free(behind_inventory2);
+        free(behind_inventory3);
         free(cursor);
         inventoryRendering = false;
         setInputHandler(defaultInputHandler);
