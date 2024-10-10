@@ -123,7 +123,12 @@ void defaultInputHandler(sk_key_t key)
         }
         break;
     }
-        
+    case sk_0: {
+            void* free;
+            gfx_SetTextXY(0, 0);
+            gfx_PrintUInt(os_MemChk(&free), 1);
+            break;
+        }
     }
 }
 
