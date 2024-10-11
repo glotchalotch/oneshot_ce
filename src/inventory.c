@@ -20,6 +20,7 @@ int8_t selectedCursorPos = INVENTORY_CURSOR_NONESELECTED;
 uint8_t cursorPos = 0;
 
 bool inventoryRendering = false;
+bool inventoryInitialized = false;
 
 static item_t nullItem = {
     ITEM_NONE,
@@ -55,6 +56,7 @@ void inventory_init() {
     for(int i = 0; i < INVENTORY_LENGTH; i++) {
         inventory[i] = &nullItem;
     }
+    inventoryInitialized = true;
 }
 
 void inventory_moveCursor(uint8_t dir) {
@@ -203,6 +205,18 @@ uint8_t inventory_getItemIndex(item_t* item) {
         }
     }
     return INVENTORY_ITEM_NOT_FOUND;
+}
+
+uint8_t inventory_getItemIndexById(uint8_t id) {
+    for(uint8_t i = 0; i < INVENTORY_LENGTH; i++) {
+        if(inventory[i]->id == id) return i;
+    }
+
+    return INVENTORY_ITEM_NOT_FOUND;
+}
+
+bool inventory_isInitialized(void) {
+    return inventoryInitialized;
 }
 
 bool inventory_isInventoryRendering() {

@@ -79,11 +79,16 @@ void drawDialogue() {
 
 }
 
-void showDialogue(const char* string[3], uint8_t type) {
+bool screenDimmed = false;
+bool screenShouldUndim = false;
+
+void showDialogue(const char* string[3], uint8_t type, bool undimScreenAtEnd) {
     dialogueType = type;
     curString1 = string[0];
     curString2 = string[1];
     curString3 = string[2];
+
+    screenShouldUndim = undimScreenAtEnd;
 
     if(dialogueType == DIALOGUE_TYPE_PERSONAL) {
         portrait = gfx_MallocSprite(80, 80);
@@ -112,6 +117,13 @@ void showDialogue(const char* string[3], uint8_t type) {
         } else {
             behindDialogue = gfx_MallocSprite(*strWidthMax, 60);
             gfx_GetSprite(behindDialogue, (GFX_LCD_WIDTH / 2) - (*strWidthMax / 2), GFX_LCD_HEIGHT * .5 - 20);
+        }
+
+        if(!screenDimmed) {
+            for(int i = 7; i < 256; i++) {
+                gfx_palette[i] = gfx_Darken(gfx_palette[i], 100);
+            }
+            screenDimmed = true;
         }
         
     }
@@ -151,6 +163,11 @@ void hideDialogue() {
         free(behindDialogue2);
         free(portrait);
     } else if(dialogueType == DIALOGUE_TYPE_IMPERSONAL) {
+        if(screenDimmed && screenShouldUndim) {
+            size_t size;
+            gfx_SetPalette(determineAppropriatePalette(&size), size, 0);
+            screenDimmed = false;
+        }
         gfx_TransparentSprite(behindDialogue, (GFX_LCD_WIDTH / 2) - (*strWidthMax / 2), GFX_LCD_HEIGHT * .5 - 20);
         if(*strWidthMax > 255) {
             gfx_TransparentSprite(behindDialogue2, (GFX_LCD_WIDTH / 2) - (*strWidthMax / 2) + 255, GFX_LCD_HEIGHT * .5 - 20);

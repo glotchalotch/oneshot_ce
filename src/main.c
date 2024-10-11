@@ -1,6 +1,7 @@
 #include <tice.h>
 #include <graphx.h>
 #include <compression.h>
+#include <sys/timers.h>
 
 #include "gfx/gfx.h"
 #include "dialogue.h"
@@ -41,11 +42,29 @@ gfx_sprite_t *niko_up_scaled;
 gfx_sprite_t *niko_left_scaled;
 gfx_sprite_t *niko_right_scaled;
 
+uint16_t darkHousePalette[256];
+
+void* determineAppropriatePalette(size_t* paletteSize) {
+    if(inventory_getItemIndexById(ITEM_LIGHTBULB) == INVENTORY_ITEM_NOT_FOUND) {
+        *paletteSize = sizeof(darkHousePalette);
+        return darkHousePalette;
+    } else {
+        *paletteSize = sizeof_global_palette;
+        return global_palette;
+    }
+}
+
 void initGfx()
 {
     gfx_Begin();
     gfx_SetDrawBuffer();
-    gfx_SetPalette(global_palette, sizeof_global_palette, 0);
+    if(!inventory_isInitialized()) {
+        gfx_SetPalette(global_palette, sizeof_global_palette, 0);
+    } else {
+        size_t size;
+        void* newPalette = determineAppropriatePalette(&size);
+        gfx_SetPalette(newPalette, size, 0);
+    }
     gfx_SetTransparentColor(COLOR_TRANSPARENT_GREEN);
     gfx_SetTextScale(1, 2);
     gfx_SetTextFGColor(COLOR_WHITE);
@@ -132,10 +151,44 @@ void defaultInputHandler(sk_key_t key)
     }
 }
 
+void fadeOut(void) {
+    setGfxActive(false);
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 256; j++) {
+            gfx_palette[j] = gfx_Darken(gfx_palette[j], 135 - (15 * i));
+        }
+        gfx_BlitBuffer();
+        msleep(50);
+    }
+}
+
+void fadeIn(void) {
+    size_t size;
+    uint16_t* referencePalette = determineAppropriatePalette(&size);
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 256; j++) {
+            gfx_palette[j] = gfx_Darken(referencePalette[j], (28 * i) + 3);
+        }
+        gfx_BlitBuffer();
+        msleep(10);
+    }
+    setGfxActive(true);
+}
+
 int main()
 {
+
     initGfx();
-    // dbg_SetBreakpoint(&inventory_toggle);
+    for(uint16_t i = 0; i < 256; i++) {
+        uint16_t color = gfx_palette[i];
+        if(i <= 9) {
+            darkHousePalette[i] = color;
+        } else darkHousePalette[i] = gfx_Darken(color, 180);
+    }
+
+    inventory_init();
+    size_t paletteSize;
+    gfx_SetPalette(determineAppropriatePalette(&paletteSize), paletteSize, 0);
 
     niko_down_scaled = gfx_MallocSprite(40, 54);
     gfx_sprite_t *niko_down = gfx_MallocSprite(20, 27);
@@ -164,8 +217,6 @@ int main()
     free(niko_up);
     free(niko_right);
     free(niko_down);
-
-    inventory_init();
 
     room_start_loadRoom();
 

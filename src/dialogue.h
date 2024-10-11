@@ -13,7 +13,7 @@ typedef struct colored_text {
 } colored_text_t;
 
 void setColoredText(uint8_t index, colored_text_t* textStruct);
-void showDialogue(const char* string[3], uint8_t type);
+void showDialogue(const char* string[3], uint8_t type, bool undimScreenAtEnd);
 void hideDialogue();
 void drawDialogue();
 

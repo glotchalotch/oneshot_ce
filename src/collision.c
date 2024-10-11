@@ -1,6 +1,7 @@
 #include <tice.h>
 #include <graphx.h>
 #include "collision.h"
+#include "main.h"
 
 bounding_box_t boundingBoxes[BBOX_ARR_SIZE];
 interactable_t interactables[INTERACTABLE_ARR_SIZE];
@@ -132,6 +133,7 @@ void checkAndWarp(int* curX, int* curY, uint8_t spriteWidth, uint8_t spriteHeigh
         if(gfx_CheckRectangleHotspot(*curX + (spriteWidth / 2), *curY + spriteHeight, 1, 1, warps[i].boundingBox.x, warps[i].boundingBox.y, warps[i].boundingBox.width, warps[i].boundingBox.height)) {
             foundWarp = &warps[i];
             if(!justWarped) {
+                fadeOut();
                 *curX = warps[i].destX;
                 *curY = warps[i].destY;
                 justWarped = true;
@@ -140,6 +142,7 @@ void checkAndWarp(int* curX, int* curY, uint8_t spriteWidth, uint8_t spriteHeigh
                     unloadRoomFunction = NULL;
                 }
                 warps[i].roomLoadFunction();
+                fadeIn();
             }
         }
     }

@@ -22,14 +22,14 @@ void tvCutscene()
         {
             const char *dialogue[3] = {"", "[Niko readies the branch...]", ""};
             setOnDialogueHide(&tvCutscene);
-            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, true);
             tvCutsceneState++;
             break;
         }
         case 1:
         {
             const char *dialogue[3] = {"Ah!", "", ""};
-            showDialogue(dialogue, DIALOGUE_TYPE_PERSONAL);
+            showDialogue(dialogue, DIALOGUE_TYPE_PERSONAL, false);
             tvCutsceneState++;
             break;
         }
@@ -37,7 +37,7 @@ void tvCutscene()
         {
             const char *dialogue[3] = {"", "[The branch lights with a blue flame.]", ""};
             setOnDialogueHide(NULL);
-            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, true);
             inventory_removeItem(inventory_getItemIndex(currentItem));
             static item_t litBranch = {ITEM_HOUSE_LITBRANCH, "lit branch"};
             uint8_t litBranchIndex = inventory_addItem(&litBranch);
@@ -52,7 +52,7 @@ void tvCutscene()
         const char *dialogue[3] = {"", "[The TV gives off a dangerous looking spark.]", ""};
         colored_text_t yellowText = {1, 38, 5, COLOR_YELLOW};
         setColoredText(0, &yellowText);
-        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, true);
     }
 }
 
@@ -107,7 +107,7 @@ void fireplaceCutscene()
                 const char *dialogue[3] = {"", "[The wood in the fireplace looks like", "it was never used.]"};
                 setOnDialogueHide(&fireplaceCutscene);
                 fireplaceCutsceneState++;
-                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, false);
                 break;
             }
             case 1:
@@ -116,7 +116,7 @@ void fireplaceCutscene()
                 fireplaceCutsceneState = 0;
                 colored_text_t blueText = {1, 21, 3, COLOR_LIGHT_BLUE};
                 setColoredText(0, &blueText);
-                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, true);
                 setOnDialogueHide(NULL);
                 break;
             }

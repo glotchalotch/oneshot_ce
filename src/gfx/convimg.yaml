@@ -8,7 +8,10 @@ palettes:
       - color: { index: 4, r: 255, g: 216, b: 0 } # yellow
       - color: { index: 5, r: 255, g: 0, b: 0 } # red
       - color: { index: 6, r: 140, g: 140, b: 140 } # gray
+      # colors below this point are chill to be overwritten when dimming the screen temporarily but not for dark house palette
       - color: { index: 7, r: 40, g: 34, b: 48} # outline
+      - color: { index: 8, r: 255, g: 233, b: 23} # niko's eyes
+      - color: { index: 9, r: 255, g: 219, b: 134} # lightbulb icon on bed
     images: automatic
 
 converts:

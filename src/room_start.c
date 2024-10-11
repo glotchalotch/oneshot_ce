@@ -35,7 +35,7 @@ void windowCutscene() {
         switch(windowCutsceneState) {
             case 0: {
                 const char *dialogue[3] = {"", "[In the faint light,", "Niko can glimpse the face of the remote.]"};
-                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, false);
                 setOnDialogueHide(&windowCutscene);
                 windowCutsceneState++;
                 break;
@@ -50,13 +50,13 @@ void windowCutscene() {
                 setColoredText(1, &textStruct2);
                 setColoredText(2, &textStruct3);
                 setColoredText(3, &textStruct4);
-                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, false);
                 windowCutsceneState++;
                 break;
             }
             case 2: {
                 const char *dialogue[3] = {"", "[They're marked in bright colors.]", ""};
-                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+                showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, true);
                 windowCutsceneState = 0;
                 setOnDialogueHide(NULL);
                 break;
@@ -71,12 +71,12 @@ void windowCutscene() {
 void remoteCutscene() {
     if(remoteCutsceneState == 0) {
         const char *dialogue[3] = {"", "[There's a TV remote here.]", ""};
-        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, false);
         setOnDialogueHide(&remoteCutscene);
         remoteCutsceneState = 1;
     } else if(remoteCutsceneState == 1) {
         const char *dialogue[3] = {"", "[Niko picks it up.]", ""};
-        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+        showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, true);
         remoteCutsceneState = 2;
         
     } else if(remoteCutsceneState == 2) {
@@ -404,7 +404,7 @@ void computerCutscene() {
             warps[1] = kitchenWarp;
             setWarps(warps);
             setOnDialogueHide(NULL); // i thought this was implicit but after rewriting inventory logic, not having this line caused some kind of game-crashing item dupe if items were in the inventory during this part. okay!!!
-            showDialogue(endDialogue, DIALOGUE_TYPE_IMPERSONAL);
+            showDialogue(endDialogue, DIALOGUE_TYPE_IMPERSONAL, true);
             break;
     }
     if(computerCutsceneState >= 4 && computerCutsceneState < 16 && !blankFlag) {

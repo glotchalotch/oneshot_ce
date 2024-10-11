@@ -37,6 +37,8 @@ void inventory_selectHighlightedItem();
 uint8_t inventory_addItem(item_t* item);
 void inventory_removeItem(uint8_t index);
 uint8_t inventory_getItemIndex(item_t* item);
+uint8_t inventory_getItemIndexById(uint8_t id);
 item_t* inventory_getCurrentItem();
 void inventory_inputHandler(sk_key_t key);
 bool inventory_isInventoryRendering();
+bool inventory_isInitialized(void);

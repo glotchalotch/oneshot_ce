@@ -17,14 +17,14 @@ void plantCutscene() {
             colored_text_t textStruct = {1, 3, 14, COLOR_GRAY};
             setColoredText(0, &textStruct);
             const char *dialogue[3] = {"", "[A withered plant sits here, stiff and dry.]", ""};
-            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, false);
             setOnDialogueHide(&plantCutscene);
             plantCutsceneState++;
             break;
         }
         case 1: {
             const char *dialogue[3] = {"", "[A branch snaps off.]", ""};
-            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, true);
             plantCutsceneState++;
             break;
         }

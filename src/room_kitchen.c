@@ -18,13 +18,13 @@ void fridgeCutscene() {
             setOnDialogueHide(fridgeCutscene);
             colored_text_t greenText = {2, 0, 17, COLOR_TRANSPARENT_GREEN};
             setColoredText(0, &greenText);
-            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, false);
             fridgeCutsceneState++;
             break;
         }
         case 1: {
             const char* dialogue[3] = {"", "[Niko takes it.]", ""};
-            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL);
+            showDialogue(dialogue, DIALOGUE_TYPE_IMPERSONAL, true);
             fridgeCutsceneState++;
             break;
         }
